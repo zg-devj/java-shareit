@@ -1,15 +1,13 @@
 package ru.practicum.shareit.user.dto;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Builder
-@Getter
+@Data
 public class UserDto {
     private Long id;
 
@@ -18,6 +16,6 @@ public class UserDto {
     private String name;
 
     @NotBlank(message = "Email не может быть пустым или отсутствовать.")
-    @Email
+    @Email(message = "Некорректный адрес электронной почты")
     private String email;
 }
