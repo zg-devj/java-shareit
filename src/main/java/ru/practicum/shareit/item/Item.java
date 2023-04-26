@@ -1,27 +1,29 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.item;
 
 import lombok.Data;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
-import java.time.LocalDate;
 import java.util.Objects;
 
 /**
- * TODO Sprint add-item-requests.
+ * TODO Sprint add-controllers.
  */
 @Data
-public class ItemRequest {
+public class Item {
     private Long id;
+    private String name;
     private String description;
-    private User requester;
-    private LocalDate created;
+    private boolean available;
+    private User owner;
+    private ItemRequest requestId;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ItemRequest that = (ItemRequest) o;
-        return Objects.equals(id, that.id);
+        Item item = (Item) o;
+        return Objects.equals(id, item.id);
     }
 
     @Override
