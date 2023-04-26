@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 /**
  * TODO Sprint add-controllers.
  */
-@RestController
-@RequestMapping(path = "/users")
-@RequiredArgsConstructor
 @Slf4j
+@RestController
+@RequiredArgsConstructor
+@RequestMapping(path = "/users")
 public class UserController {
 
     private final UserService userService;

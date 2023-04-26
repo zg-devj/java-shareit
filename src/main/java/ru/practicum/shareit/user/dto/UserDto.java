@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.dto;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
