@@ -1,7 +1,6 @@
 package ru.practicum.shareit.user;
 
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.exceptions.UserAlreadyExistException;
 
 import java.util.*;
 
@@ -14,18 +13,22 @@ public class UserInMemoryRepository implements UserRepository {
     public User save(User user) {
         user.setId(++identity);
         users.put(user.getId(), user);
-        return user;
+        return users.get(user.getId());
     }
 
     @Override
     public Optional<User> findById(Long userId) {
-        return Optional.of(users.get(userId));
+        if (users.containsKey(userId)) {
+            return Optional.of(users.get(userId));
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
         return users.values().stream()
-                .filter(e->e.getEmail().equalsIgnoreCase(email))
+                .filter(e -> e.getEmail().equalsIgnoreCase(email))
                 .findFirst();
     }
 
