@@ -12,40 +12,32 @@ public class UserInMemoryRepository implements UserRepository {
 
     @Override
     public User save(User user) {
-        isEmailExist(user.getId(), user.getEmail());
         user.setId(++identity);
         users.put(user.getId(), user);
         return user;
     }
 
     @Override
-    public Optional<User> findUserById(Long userId) {
+    public Optional<User> findById(Long userId) {
         return Optional.of(users.get(userId));
     }
 
     @Override
-    public List<User> findAllUsers() {
+    public Optional<User> findByEmail(String email) {
+        return users.values().stream()
+                .filter(e->e.getEmail().equalsIgnoreCase(email))
+                .findFirst();
+    }
+
+    @Override
+    public List<User> findAll() {
         return List.copyOf(users.values());
     }
 
     @Override
     public User update(User user) {
-        isEmailExist(user.getId(), user.getEmail());
         users.put(user.getId(), user);
         return users.get(user.getId());
-    }
-
-    @Override
-    public User updateName(Long userId, String name) {
-        users.get(userId).setName(name);
-        return users.get(userId);
-    }
-
-    @Override
-    public User updateEmail(Long userId, String email) {
-        isEmailExist(userId, email);
-        users.get(userId).setEmail(email);
-        return users.get(userId);
     }
 
     @Override
@@ -54,15 +46,14 @@ public class UserInMemoryRepository implements UserRepository {
     }
 
     @Override
-    public boolean isExistsUser(Long userId) {
+    public boolean existsById(Long userId) {
         return users.containsKey(userId);
     }
 
-    private void isEmailExist(Long currentUserId, String email) {
-        if (users.values().stream()
-                .filter(u -> !Objects.equals(u.getId(), currentUserId))
-                .anyMatch(e -> e.getEmail().equalsIgnoreCase(email))) {
-            throw new UserAlreadyExistException("Пользователь уже существует");
-        }
+    @Override
+    public boolean canUpdate(Long userId, String email) {
+        return users.values().stream()
+                .filter(u -> !Objects.equals(u.getId(), userId))
+                .noneMatch(e -> e.getEmail().equalsIgnoreCase(email));
     }
 }

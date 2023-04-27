@@ -5,8 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.UserAlreadyExistException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -17,6 +19,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User saveUser(User user) {
+        Optional<User> savedUser = userRepository.findByEmail(user.getEmail());
+        if (savedUser.isPresent()) {
+            throw new UserAlreadyExistException("Пользователь уже существует.");
+        }
         User saved = userRepository.save(user);
         log.info("Сохранен пользователь {}", saved.getId());
         return saved;
@@ -24,31 +30,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(User user) {
-        // получаем пользователя
-        User updated = userRepository.findUserById(user.getId())
+        if (user.getEmail() != null && !userRepository.canUpdate(user.getId(), user.getEmail())) {
+            throw new UserAlreadyExistException("Пользователь с таким email существует.");
+        }
+        User updated = userRepository.findById(user.getId())
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Пользователь c id=%d не найден", user.getId())));
 
-        if (user.getName() != null && user.getEmail() == null) {
-            log.info("Обновлен email пользователя.");
-            return userRepository.updateName(user.getId(), user.getName());
+        if (user.getEmail() != null) {
+            log.info("Обновляется email пользователя.");
+            updated.setEmail(user.getEmail());
         }
-        if (user.getEmail() != null && user.getName() == null) {
-            log.info("Обновленно имя пользователя.");
-            return userRepository.updateEmail(user.getId(), user.getEmail());
+        if (user.getName() != null) {
+            log.info("Обновляется имя пользователя.");
+            updated.setName(user.getName());
         }
-
-        updated.setName(user.getName());
-        updated.setEmail(user.getEmail());
-        User updatedUser = userRepository.update(updated);
-        log.info("Обновленно имя и email пользователя.");
-        return updatedUser;
+        return userRepository.update(updated);
     }
 
     @Override
     public User findUserById(Long userId) {
-        User user = userRepository.findUserById(userId)
-                .orElseThrow(() -> new NotFoundException(""));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id=%d не найден", userId)));
         log.info("Возращен пользовател с id={}.", user.getId());
         return user;
     }
@@ -61,7 +64,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findAllUsers() {
-        List<User> users = userRepository.findAllUsers();
+        List<User> users = userRepository.findAll();
         log.info("Возвращено {} пользователей.", users.size());
         return users;
     }

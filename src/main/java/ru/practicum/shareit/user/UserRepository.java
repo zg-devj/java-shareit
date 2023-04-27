@@ -6,17 +6,17 @@ import java.util.Optional;
 public interface UserRepository {
     User save(User user);
 
-    Optional<User> findUserById(Long userId);
+    Optional<User> findById(Long userId);
 
-    List<User> findAllUsers();
+    Optional<User> findByEmail(String email);
+
+    List<User> findAll();
 
     User update(User user);
 
-    User updateName(Long userId, String name);
-
-    User updateEmail(Long userId, String email);
-
     void delete(Long userId);
 
-    boolean isExistsUser(Long userId);
+    boolean existsById(Long userId);
+
+    boolean canUpdate(Long userId, String email);
 }
