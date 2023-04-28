@@ -38,11 +38,11 @@ public class UserServiceImpl implements UserService {
                         String.format("Пользователь c id=%d не найден", user.getId())));
 
         if (user.getEmail() != null) {
-            log.info("Обновляется email пользователя.");
+            log.info("Обновляется email пользователя c id={}.", updated.getId());
             updated.setEmail(user.getEmail());
         }
         if (user.getName() != null) {
-            log.info("Обновляется имя пользователя.");
+            log.info("Обновляется имя пользователя c id={}.", updated.getId());
             updated.setName(user.getName());
         }
         return userRepository.update(updated);

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.exceptions.BadRequestException;
+import ru.practicum.shareit.exceptions.ForbiddenException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.UserAlreadyExistException;
 
@@ -17,6 +18,14 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handlerValidateException(final BadRequestException e) {
+        log.warn(e.getMessage());
+        return e.getMessage();
+    }
+
+    // 403
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public String handleForbiddenException(final ForbiddenException e) {
         log.warn(e.getMessage());
         return e.getMessage();
     }
