@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
  * TODO Sprint add-controllers.
  */
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class ItemDto {
     private Long id;
 

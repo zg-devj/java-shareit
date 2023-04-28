@@ -13,4 +13,6 @@ public interface ItemRepository {
     List<Item> findAllByUserId(Long userId);
 
     List<Item> findByNameAndByDescription(String search);
+
+    void deleteAllByUserId(Long userId);
 }
