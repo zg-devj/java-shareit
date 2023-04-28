@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.UserAlreadyExistException;
+import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.ItemService;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +18,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
     @Override
     public User saveUser(User user) {
@@ -59,6 +62,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long userId) {
         log.info("Удаление пользователя с id={}.", userId);
+        itemRepository.deleteAllByUserId(userId);
         userRepository.delete(userId);
     }
 

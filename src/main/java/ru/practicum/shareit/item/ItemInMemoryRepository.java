@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 
 @Repository
@@ -53,5 +54,16 @@ public class ItemInMemoryRepository implements ItemRepository {
                 .filter(Item::getAvailable)
                 .filter(predicate1.or(predicate2))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteAllByUserId(Long userId) {
+        List<Long> idS = items.values().stream()
+                .filter(u -> Objects.equals(u.getOwner().getId(), userId))
+                .map(Item::getId)
+                .collect(Collectors.toList());
+        for (Long id : idS) {
+            items.remove(id);
+        }
     }
 }

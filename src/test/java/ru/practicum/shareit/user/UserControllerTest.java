@@ -30,7 +30,7 @@ class UserControllerTest {
     private UserService userService;
 
     @Test
-    void post_Create_Normal_Return201() throws Exception {
+    void createUser_Normal_Return201() throws Exception {
         User user = getNormalUser();
 
         when(userService.saveUser(user)).thenReturn(user);
@@ -47,7 +47,7 @@ class UserControllerTest {
     }
 
     @Test
-    void post_Create_EmptyName_ReturnBadRequest() throws Exception {
+    void createUser_EmptyName_ReturnBadRequest() throws Exception {
         User user = User.builder()
                 .id(1L)
                 .name("")
@@ -61,7 +61,7 @@ class UserControllerTest {
     }
 
     @Test
-    void post_Create_WrongEmail_ReturnBadRequest() throws Exception {
+    void createUser_WrongEmail_ReturnBadRequest() throws Exception {
         User user = User.builder()
                 .id(1L)
                 .name("user")
@@ -75,7 +75,7 @@ class UserControllerTest {
     }
 
     @Test
-    void patch_Update() throws Exception {
+    void updateUser_Normal() throws Exception {
         User userUpdated = User.builder()
                 .id(1L)
                 .name("updatedUser")
@@ -102,14 +102,6 @@ class UserControllerTest {
                 ).andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("user"));
-    }
-
-    private User getNormalUser() {
-        return User.builder()
-                .id(1L)
-                .name("user")
-                .email("user@example.com")
-                .build();
     }
 
     @Test
@@ -144,5 +136,13 @@ class UserControllerTest {
                 ).andExpect(status().isOk())
                 .andExpect(content()
                         .json(objectMapper.writeValueAsString(Arrays.asList(user1, user2))));
+    }
+
+    private User getNormalUser() {
+        return User.builder()
+                .id(1L)
+                .name("user")
+                .email("user@example.com")
+                .build();
     }
 }

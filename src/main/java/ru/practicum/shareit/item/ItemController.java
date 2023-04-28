@@ -30,16 +30,8 @@ public class ItemController {
     public ItemDto create(
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
             @Valid @RequestBody ItemDto itemDto,
-            BindingResult result,
             HttpServletResponse response
     ) {
-        if (result.hasErrors()) {
-            Optional<FieldError> field = result.getFieldErrors().stream()
-                    .filter(f -> f.getObjectName().equals("itemDto")).findFirst();
-            if (field.isPresent()) {
-                throw new BadRequestException(field.get().getDefaultMessage());
-            }
-        }
         userIsNull(userId);
         log.info("POST /items - добавление вещи пользователем {}", userId);
         Item item = ItemMapper.toItem(itemDto);
@@ -51,8 +43,8 @@ public class ItemController {
     @PatchMapping("/{id}")
     public ItemDto update(
             @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
-            @PathVariable Long id,
-            @RequestBody ItemDto itemDto
+            @RequestBody ItemDto itemDto,
+            @PathVariable Long id
     ) {
         userIsNull(userId);
         log.info("PATCH /items/{} - обновить вещь", id);
@@ -74,7 +66,7 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDto> findAllByUserId(
-            @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId
+            @RequestHeader(value = "X-Sharer-User-Id") Long userId
     ) {
         userIsNull(userId);
         log.info("GET /items - просмотр вещей пользователем с id={}", userId);
