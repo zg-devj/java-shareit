@@ -39,7 +39,7 @@ class UserServiceTest {
 
     @Test
     void saveUser_Normal_ReturnUser() {
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.empty());
+        given(userRepository.findByEmail("user@example.com")).willReturn(Optional.empty());
         given(userRepository.save(user)).willReturn(user);
 
         User added = userService.saveUser(user);
@@ -47,8 +47,9 @@ class UserServiceTest {
         Assertions.assertThat(added)
                 .isNotNull()
                 .usingRecursiveComparison().isEqualTo(user);
-        verify(userRepository, times(1)).findByEmail(any(String.class));
-        verify(userRepository, times(1)).save(any(User.class));
+
+        verify(userRepository, times(1)).findByEmail("user@example.com");
+        verify(userRepository, times(1)).save(user);
         verifyNoMoreInteractions(userRepository);
     }
 
@@ -203,7 +204,7 @@ class UserServiceTest {
     }
 
     @Test
-    void findUserById_WrongId_Exception() {
+    void findUserById_WrongId_NotFoundException() {
         Long anyLong = anyLong();
         given(userRepository.findById(anyLong)).willReturn(Optional.empty());
 
