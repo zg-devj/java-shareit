@@ -55,7 +55,7 @@ class UserServiceTest {
 
     @Test
     void saveUser_WhenEmailExists_Exception() {
-        given(userRepository.findByEmail(user.getEmail())).willReturn(Optional.of(user));
+        given(userRepository.findByEmail("user@example.com")).willReturn(Optional.of(user));
 
         Throwable thrown = Assertions.catchException(() -> userService.saveUser(user));
 
@@ -63,7 +63,7 @@ class UserServiceTest {
                 .isInstanceOf(UserAlreadyExistException.class)
                 .hasMessage("Пользователь уже существует.");
 
-        verify(userRepository, times(1)).findByEmail(any(String.class));
+        verify(userRepository, times(1)).findByEmail("user@example.com");
         verifyNoMoreInteractions(userRepository);
     }
 
@@ -75,146 +75,128 @@ class UserServiceTest {
                 .email("updatedName@example.com")
                 .build();
 
-        given(userRepository.canUpdate(anyLong(), anyString())).willReturn(true);
-        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
-        given(userRepository.update(user)).willReturn(updatedData);
+        given(userRepository.canUpdate(1L, "updatedName@example.com")).willReturn(true);
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(userRepository.update(user)).willReturn(user);
 
         User updatedUser = userService.updateUser(updatedData);
 
         Assertions.assertThat(updatedUser.getEmail()).isEqualTo("updatedName@example.com");
         Assertions.assertThat(updatedUser.getName()).isEqualTo("updatedName");
 
-        verify(userRepository, times(1)).canUpdate(anyLong(), anyString());
-        verify(userRepository, times(1)).findById(anyLong());
-        verify(userRepository, times(1)).update(any(User.class));
+        verify(userRepository, times(1)).canUpdate(1L, "updatedName@example.com");
+        verify(userRepository, times(1)).findById(1L);
+        verify(userRepository, times(1)).update(user);
         verifyNoMoreInteractions(userRepository);
     }
 
     @Test
     void updateUser_EmailIsExists_Exception() {
-        given(userRepository.canUpdate(anyLong(), anyString())).willReturn(false);
+        final User updatedData = User.builder()
+                .id(2L)
+                .name("user2")
+                .email("user@example.com")
+                .build();
+        given(userRepository.canUpdate(2L, "user@example.com")).willReturn(false);
 
-        Throwable thrown = Assertions.catchException(() -> userService.updateUser(user));
+        Throwable thrown = Assertions.catchException(() -> userService.updateUser(updatedData));
 
         Assertions.assertThat(thrown)
                 .isInstanceOf(UserAlreadyExistException.class)
                 .hasMessage("Пользователь с таким email существует.");
 
-        verify(userRepository, times(1)).canUpdate(anyLong(), anyString());
+        verify(userRepository, times(1)).canUpdate(2L, "user@example.com");
         verifyNoMoreInteractions(userRepository);
     }
 
     @Test
     void updateUser_OnlyName_Normal() {
-        User updatedUser = User.builder()
+        User updatedData = User.builder()
                 .id(1L)
                 .name("updatedName")
-                .email("user@example.com")
                 .build();
 
-        User updatingData = User.builder()
-                .id(1L)
-                .name("updatedName")
-                .email(null)
-                .build();
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(userRepository.update(user)).willReturn(user);
 
-        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
-        given(userRepository.update(user)).willReturn(updatedUser);
+        User updatedUser = userService.updateUser(updatedData);
 
-        User returnedUser = userService.updateUser(updatingData);
+        Assertions.assertThat(updatedUser.getEmail()).isEqualTo("user@example.com");
+        Assertions.assertThat(updatedUser.getName()).isEqualTo("updatedName");
 
-        Assertions.assertThat(returnedUser.getEmail()).isEqualTo("user@example.com");
-        Assertions.assertThat(returnedUser.getName()).isEqualTo("updatedName");
-
-        verify(userRepository, times(1)).findById(anyLong());
-        verify(userRepository, times(1)).update(any(User.class));
+        verify(userRepository, times(1)).findById(1L);
+        verify(userRepository, times(1)).update(user);
         verifyNoMoreInteractions(userRepository);
     }
 
     @Test
     void updateUser_OnlyEmail_Normal() {
-        User updatedUser = User.builder()
+        User updatedData = User.builder()
                 .id(1L)
-                .name("user")
                 .email("updatedName@example.com")
                 .build();
 
-        User updatingData = User.builder()
-                .id(1L)
-                .name(null)
-                .email("updatedName@example.com")
-                .build();
+        given(userRepository.canUpdate(1L, "updatedName@example.com")).willReturn(true);
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(userRepository.update(user)).willReturn(user);
 
-        given(userRepository.canUpdate(anyLong(), anyString())).willReturn(true);
-        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
-        given(userRepository.update(user)).willReturn(updatedUser);
+        User updatedUser = userService.updateUser(updatedData);
 
-        User returnedUser = userService.updateUser(updatingData);
+        Assertions.assertThat(updatedUser.getEmail()).isEqualTo("updatedName@example.com");
+        Assertions.assertThat(updatedUser.getName()).isEqualTo("user");
 
-        Assertions.assertThat(returnedUser.getEmail()).isEqualTo("updatedName@example.com");
-        Assertions.assertThat(returnedUser.getName()).isEqualTo("user");
-
-        verify(userRepository, times(1)).canUpdate(anyLong(), anyString());
-        verify(userRepository, times(1)).findById(anyLong());
-        verify(userRepository, times(1)).update(any(User.class));
+        verify(userRepository, times(1)).canUpdate(1L, "updatedName@example.com");
+        verify(userRepository, times(1)).findById(1L);
+        verify(userRepository, times(1)).update(user);
         verifyNoMoreInteractions(userRepository);
     }
 
     @Test
     void updateUser_EmailIfDuplicate_Normal() {
-        User updatedUser = User.builder()
+        User updatedData = User.builder()
                 .id(1L)
-                .name("user")
                 .email("user@example.com")
                 .build();
 
-        User updatingData = User.builder()
-                .id(1L)
-                .name(null)
-                .email("user@example.com")
-                .build();
+        given(userRepository.canUpdate(1L, "user@example.com")).willReturn(true);
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(userRepository.update(user)).willReturn(user);
 
-        given(userRepository.canUpdate(anyLong(), anyString())).willReturn(true);
-        given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
-        given(userRepository.update(user)).willReturn(updatedUser);
-
-        User returnedUser = userService.updateUser(updatingData);
+        User returnedUser = userService.updateUser(updatedData);
 
         Assertions.assertThat(returnedUser.getEmail()).isEqualTo("user@example.com");
         Assertions.assertThat(returnedUser.getName()).isEqualTo("user");
 
-        verify(userRepository, times(1)).canUpdate(anyLong(), anyString());
-        verify(userRepository, times(1)).findById(anyLong());
-        verify(userRepository, times(1)).update(any(User.class));
+        verify(userRepository, times(1)).canUpdate(1L, "user@example.com");
+        verify(userRepository, times(1)).findById(1L);
+        verify(userRepository, times(1)).update(user);
         verifyNoMoreInteractions(userRepository);
     }
 
     @Test
     void findUserById_Normal_ReturnUser() {
-        given(userRepository.findById(1L))
-                .willReturn(Optional.of(user));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
 
-        User actual = userService.findUserById(user.getId());
+        User actual = userService.findUserById(1L);
 
         Assertions.assertThat(actual)
                 .isNotNull()
                 .usingRecursiveComparison().isEqualTo(user);
-        verify(userRepository, times(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(1L);
         verifyNoMoreInteractions(userRepository);
     }
 
     @Test
     void findUserById_WrongId_NotFoundException() {
-        Long anyLong = anyLong();
-        given(userRepository.findById(anyLong)).willReturn(Optional.empty());
+        given(userRepository.findById(999L)).willReturn(Optional.empty());
 
-        Throwable thrown = Assertions.catchException(() -> userService.findUserById(anyLong));
+        Throwable thrown = Assertions.catchException(() -> userService.findUserById(999L));
 
         Assertions.assertThat(thrown)
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage(String.format("Пользователь c id=%d не найден", anyLong));
+                .hasMessage(String.format("Пользователь c id=%d не найден", 999L));
 
-        verify(userRepository, times(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(999L);
         verifyNoMoreInteractions(userRepository);
     }
 
