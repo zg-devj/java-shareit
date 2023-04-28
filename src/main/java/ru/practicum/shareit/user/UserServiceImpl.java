@@ -18,6 +18,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
     @Override
     public User saveUser(User user) {
@@ -61,6 +62,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long userId) {
         log.info("Удаление пользователя с id={}.", userId);
+        itemRepository.deleteAllByUserId(userId);
         userRepository.delete(userId);
     }
 
