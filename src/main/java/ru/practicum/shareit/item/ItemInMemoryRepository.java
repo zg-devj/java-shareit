@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 @Repository
 public class ItemInMemoryRepository implements ItemRepository {
-    Map<Long, Item> items = new HashMap<>();
+    private final Map<Long, Item> items = new HashMap<>();
     private Long identity = 0L;
 
     @Override

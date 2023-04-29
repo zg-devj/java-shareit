@@ -23,7 +23,7 @@ public class ItemController {
 
     @PostMapping
     public ItemDto create(
-            @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
+            @RequestHeader(value = "X-Sharer-User-Id") Long userId,
             @Valid @RequestBody ItemDto itemDto,
             HttpServletResponse response
     ) {
@@ -37,7 +37,7 @@ public class ItemController {
 
     @PatchMapping("/{id}")
     public ItemDto update(
-            @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
+            @RequestHeader(value = "X-Sharer-User-Id") Long userId,
             @RequestBody ItemDto itemDto,
             @PathVariable Long id
     ) {
@@ -51,7 +51,6 @@ public class ItemController {
 
     @GetMapping("/{id}")
     public ItemDto findById(
-            @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
             @PathVariable Long id
     ) {
         log.info("GET /items/{} - просмотр вещи", id);
