@@ -8,7 +8,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * TODO Sprint add-controllers.
