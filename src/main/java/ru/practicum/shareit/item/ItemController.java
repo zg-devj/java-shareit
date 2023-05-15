@@ -29,10 +29,9 @@ public class ItemController {
     ) {
         userIsNull(userId);
         log.info("POST /items - добавление вещи пользователем {}", userId);
-        Item item = ItemMapper.toItem(itemDto);
-        Item created = itemService.saveItem(userId, item);
+        ItemDto created = itemService.saveItem(userId, itemDto);
         response.setStatus(201);
-        return ItemMapper.toItemDto(created);
+        return created;
     }
 
     @PatchMapping("/{id}")
@@ -43,10 +42,8 @@ public class ItemController {
     ) {
         userIsNull(userId);
         log.info("PATCH /items/{} - обновить вещь", id);
-        Item item = ItemMapper.toItem(itemDto);
-        item.setId(id);
-        Item created = itemService.updateItem(userId, item);
-        return ItemMapper.toItemDto(created);
+        itemDto.setId(id);
+        return itemService.updateItem(userId, itemDto);
     }
 
     @GetMapping("/{id}")
@@ -54,8 +51,7 @@ public class ItemController {
             @PathVariable Long id
     ) {
         log.info("GET /items/{} - просмотр вещи", id);
-        Item item = itemService.findById(id);
-        return ItemMapper.toItemDto(item);
+        return itemService.findById(id);
     }
 
     @GetMapping
@@ -64,20 +60,15 @@ public class ItemController {
     ) {
         userIsNull(userId);
         log.info("GET /items - просмотр вещей пользователем с id={}", userId);
-        List<Item> items = itemService.findAllByUserId(userId);
-        return items.stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+        return itemService.findAllByUserId(userId);
     }
+
 
     @GetMapping("/search")
     public List<ItemDto> search(
             @RequestParam String text
     ) {
-        List<Item> items = itemService.search(text);
-        return items.stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+        return itemService.search(text);
     }
 
     private void userIsNull(Long userId) {

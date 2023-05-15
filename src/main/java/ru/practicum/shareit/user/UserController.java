@@ -27,10 +27,9 @@ public class UserController {
             HttpServletResponse response
     ) {
         log.info("POST /users - создание пользователя");
-        User user = UserMapper.toUser(userDto);
-        User created = userService.saveUser(user);
+        UserDto created = userService.saveUser(userDto);
         response.setStatus(201);
-        return UserMapper.toUserDto(created);
+        return created;
     }
 
     @PatchMapping("/{id}")
@@ -40,9 +39,7 @@ public class UserController {
     ) {
         log.info("PATCH /users/{} - обновить пользователя", id);
         userDto.setId(id);
-        User user = UserMapper.toUser(userDto);
-        User updated = userService.updateUser(user);
-        return UserMapper.toUserDto(updated);
+        return userService.updateUser(userDto);
     }
 
     @GetMapping("/{id}")
@@ -50,7 +47,7 @@ public class UserController {
             @PathVariable Long id
     ) {
         log.info("GET /users/{} - получение пользователя", id);
-        return UserMapper.toUserDto(userService.findUserById(id));
+        return userService.findUserById(id);
     }
 
     @DeleteMapping("/{id}")
@@ -66,9 +63,6 @@ public class UserController {
     @GetMapping
     public List<UserDto> findAll() {
         log.info("GET /users - вернуть всех пользователей пользователя");
-        List<User> users = userService.findAllUsers();
-        return users.stream()
-                .map(UserMapper::toUserDto)
-                .collect(Collectors.toList());
+        return userService.findAllUsers();
     }
 }
