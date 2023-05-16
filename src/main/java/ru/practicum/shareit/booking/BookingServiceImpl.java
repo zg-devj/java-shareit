@@ -15,6 +15,7 @@ import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +63,14 @@ public class BookingServiceImpl implements BookingService {
             booking.setStatus(BookingStatus.REJECT);
         }
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
+    }
+
+    @Override
+    public BookingDto getBooking(Long userId, Long bookingId) {
+        Booking booking = bookingRepository.findBookingByOwnerOrBooker(bookingId, userId)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("Бронирование c id=%d не найден.", bookingId)));
+        return BookingMapper.toBookingDto(booking);
     }
 
     private void validDateForBookingNewDto(BookingNewDto bookingNewDto) {
