@@ -1,3 +1,4 @@
+drop table if exists bookings;
 drop table if exists items;
 drop table if exists users;
 
@@ -20,4 +21,14 @@ create table if not exists items
     request_id   bigint       null,
     constraint pk_items primary key (id),
     constraint fk_items_users foreign key (owner_id) references users (id)
+);
+
+create table if not exists bookings
+(
+    id bigint generated always as identity ,
+    start_date timestamp without time zone,
+    end_date timestamp without time zone,
+    item_id bigint not null ,
+    booker_id bigint not null,
+    status varchar(8)
 );

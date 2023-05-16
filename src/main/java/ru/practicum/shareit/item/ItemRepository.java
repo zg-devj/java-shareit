@@ -4,10 +4,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
     Iterable<Item> findAllByOwnerId(Long ownerId);
+
+    Optional<Item> findByIdAndAvailableTrue(Long id);
 
     Iterable<Item> searchByNameContainingIgnoreCaseOrDescriptionIsContainingIgnoreCase(String search1, String search2);
 

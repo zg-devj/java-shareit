@@ -1,1 +1,0 @@
--- insert into users(id, name, email) values (1, 'Gleb', 'gleb@example.com');
