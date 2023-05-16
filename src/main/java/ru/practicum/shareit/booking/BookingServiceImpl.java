@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingNewDto;
 import ru.practicum.shareit.exceptions.BadRequestException;
+import ru.practicum.shareit.exceptions.ForbiddenException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemRepository;
@@ -13,10 +14,11 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-//@Transactional(readOnly = true)
+@Transactional(readOnly = true)
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
@@ -24,7 +26,7 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
 
     @Override
-    //@Transactional
+    @Transactional
     public BookingDto createBooking(Long userId, BookingNewDto bookingNewDto) {
         validDateForBookingNewDto(bookingNewDto);
 
@@ -41,8 +43,25 @@ public class BookingServiceImpl implements BookingService {
         }
         Booking booking = BookingMapper.toBooking(bookingNewDto, item, user);
         Booking saved = bookingRepository.save(booking);
-        BookingDto ret = BookingMapper.toBookingDto(saved);
-        return ret;
+        return BookingMapper.toBookingDto(saved);
+    }
+
+    @Override
+    @Transactional
+    public BookingDto approve(Long userId, boolean approve, Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("Бронирование c id=%d не найден.", bookingId)));
+        User owner = booking.getItem().getOwner();
+        if (!Objects.equals(userId, owner.getId())) {
+            throw new ForbiddenException("У вас нет прав для изменения статуса бронирования");
+        }
+        if (approve) {
+            booking.setStatus(BookingStatus.APPROVED);
+        } else {
+            booking.setStatus(BookingStatus.REJECT);
+        }
+        return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
     private void validDateForBookingNewDto(BookingNewDto bookingNewDto) {
