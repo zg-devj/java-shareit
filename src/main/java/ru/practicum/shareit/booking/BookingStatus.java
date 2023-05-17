@@ -1,5 +1,9 @@
 package ru.practicum.shareit.booking;
 
 public enum BookingStatus {
-    WAITING, APPROVED, REJECT, CANCELED
+    WAITING, APPROVED, REJECTED, CANCELED;
+
+    public String toString() {
+        return this.name();
+    }
 }

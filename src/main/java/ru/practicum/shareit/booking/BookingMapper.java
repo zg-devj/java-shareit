@@ -10,6 +10,9 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BookingMapper {
@@ -37,6 +40,12 @@ public class BookingMapper {
                 .booker(UserMapper.toUserDto(booking.getBooker()))
                 .item(ItemMapper.toItemDto(booking.getItem()))
                 .build();
+    }
+
+    public static List<BookingDto> toBookingDto(Iterable<Booking> bookings) {
+        return StreamSupport.stream(bookings.spliterator(), false)
+                .map(BookingMapper::toBookingDto)
+                .collect(Collectors.toList());
     }
 }
 

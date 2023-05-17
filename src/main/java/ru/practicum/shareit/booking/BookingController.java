@@ -1,9 +1,13 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingNewDto;
+import ru.practicum.shareit.exceptions.BadRequestException;
+
+import java.util.List;
 
 /**
  * TODO Sprint add-bookings.
@@ -14,6 +18,7 @@ import ru.practicum.shareit.booking.dto.BookingNewDto;
 public class BookingController {
 
     private final BookingService bookingService;
+    private final BookingRepository bookingRepository;
 
     @PostMapping
     public BookingDto create(
@@ -38,5 +43,41 @@ public class BookingController {
             @PathVariable Long bookingId
     ) {
         return bookingService.getBooking(userId, bookingId);
+    }
+
+    @GetMapping
+    public List<BookingDto> getAll(
+            @RequestHeader(value = "X-Sharer-User-Id") Long userId,
+            @RequestParam(defaultValue = "ALL") String state
+    ) {
+        State state1;
+        try {
+            state1 = State.valueOf(state);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Unknown state: " + state);
+        }
+
+        return bookingService.getAllBookings(userId, state1, false);
+    }
+
+    @GetMapping("/owner")
+    public List<BookingDto> getOwnerAll(
+            @RequestHeader(value = "X-Sharer-User-Id") Long userId,
+            @RequestParam(defaultValue = "ALL") String state
+    ) {
+        State state1;
+        try {
+            state1 = State.valueOf(state);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Unknown state: " + state);
+        }
+        return bookingService.getAllBookings(userId, state1, true);
+    }
+
+    @Transactional
+    @GetMapping("/info")
+    public List<Booking> info() {
+        List<Booking> bookings = bookingRepository.findAllByItem_OwnerId(4L);
+        return bookings;
     }
 }

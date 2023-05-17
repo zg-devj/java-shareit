@@ -14,8 +14,8 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +35,8 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Пользователь c id=%d не найден.", userId)));
 
-        Item item = itemRepository.findById(bookingNewDto.getItemId())
+        //Item item = itemRepository.findById(bookingNewDto.getItemId())
+        Item item = itemRepository.findByIdAndOwnerNot(bookingNewDto.getItemId(), user)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Вещь c id=%d не найдена.", bookingNewDto.getItemId())));
         if (!item.getAvailable()) {
@@ -50,17 +51,22 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDto approve(Long userId, boolean approve, Long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId)
+        Booking booking = bookingRepository.findBookingForApprove(bookingId, userId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Бронирование c id=%d не найден.", bookingId)));
+        if (approve && booking.getStatus() == BookingStatus.APPROVED)
+        //        ||(!approve && booking.getStatus() != BookingStatus.APPROVED))
+        {
+            throw new BadRequestException("Бронирование уже имеет устанавливаемый статус.");
+        }
         User owner = booking.getItem().getOwner();
         if (!Objects.equals(userId, owner.getId())) {
-            throw new ForbiddenException("У вас нет прав для изменения статуса бронирования");
+            throw new ForbiddenException("У вас нет прав для изменения статуса бронирования.");
         }
         if (approve) {
             booking.setStatus(BookingStatus.APPROVED);
         } else {
-            booking.setStatus(BookingStatus.REJECT);
+            booking.setStatus(BookingStatus.REJECTED);
         }
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
@@ -71,6 +77,36 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Бронирование c id=%d не найден.", bookingId)));
         return BookingMapper.toBookingDto(booking);
+    }
+
+    @Override
+    public List<BookingDto> getAllBookings(Long userId, State state, boolean isOwner) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException(String.format("Пользователь c id=%d не найден.", userId));
+        }
+        switch (state) {
+            case WAITING:
+            case CURRENT:
+            case REJECTED:
+            case PAST:
+            case FUTURE:
+                if (isOwner) {
+                    List<Booking> list = bookingRepository.findAllByItem_OwnerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
+                    return BookingMapper.toBookingDto(list);
+                } else {
+                    List<Booking> list = bookingRepository.findAllByBooker_IdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
+                    return BookingMapper.toBookingDto(list);
+                }
+            case ALL:
+            default:
+                if (isOwner) {
+                    List<Booking> list = bookingRepository.findAllByItem_OwnerIdOrderByStartDesc(userId);
+                    return BookingMapper.toBookingDto(list);
+                } else {
+                    List<Booking> list = bookingRepository.findAllByBooker_IdOrderByStartDesc(userId);
+                    return BookingMapper.toBookingDto(list);
+                }
+        }
     }
 
     private void validDateForBookingNewDto(BookingNewDto bookingNewDto) {
