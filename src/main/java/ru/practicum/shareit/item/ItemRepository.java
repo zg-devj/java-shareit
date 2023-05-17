@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    Iterable<Item> findAllByOwnerId(Long ownerId);
+    List<Item> findAllByOwnerIdOrderByIdAsc(Long ownerId);
 
     Optional<Item> findByIdAndOwnerNot(Long itemId, User user);
 

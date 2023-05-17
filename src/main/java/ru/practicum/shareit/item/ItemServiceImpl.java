@@ -2,10 +2,14 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.dto.BookingShort;
 import ru.practicum.shareit.exceptions.ForbiddenException;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
@@ -21,6 +25,7 @@ import java.util.Objects;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
 
     @Override
     @Transactional
@@ -66,21 +71,30 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto findById(Long itemId) {
+    public ItemBookingDto findById(Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Вещь c id=%d не найдена", itemId)));
-        return ItemMapper.toItemDto(item);
+        PageRequest page = PageRequest.of(0, 2);
+        List<BookingShort> lastAndNext = bookingRepository.findBookingLastAndNext(userId, itemId, page);
+        return ItemMapper.toItemBookingDto(item, lastAndNext);
     }
 
     @Override
-    public List<ItemDto> findAllByUserId(Long userId) {
-        return ItemMapper.toItemDto(itemRepository.findAllByOwnerId(userId));
+    public List<ItemBookingDto> findAllByUserId(Long userId) {
+        List<ItemBookingDto> returned = new ArrayList<>();
+        List<Item> items = itemRepository.findAllByOwnerIdOrderByIdAsc(userId);
+        PageRequest page = PageRequest.of(0, 2);
+        for(Item item : items){
+            List<BookingShort> lastAndNext = bookingRepository.findBookingLastAndNext(userId, item.getId(), page);
+            returned.add(ItemMapper.toItemBookingDto(item,lastAndNext));
+        }
+        return returned;
     }
 
     @Override
     public List<ItemDto> search(String search) {
-        if(search!=null && search.isBlank()){
+        if (search != null && search.isBlank()) {
             return new ArrayList<>();
         }
         return ItemMapper.toItemDto(

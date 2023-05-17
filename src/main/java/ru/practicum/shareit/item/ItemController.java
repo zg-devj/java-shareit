@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exceptions.BadRequestException;
+import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.servlet.http.HttpServletResponse;
@@ -46,15 +47,16 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ItemDto findById(
+    public ItemBookingDto findById(
+            @RequestHeader(value = "X-Sharer-User-Id") Long userId,
             @PathVariable Long id
     ) {
         log.info("GET /items/{} - просмотр вещи", id);
-        return itemService.findById(id);
+        return itemService.findById(id, userId);
     }
 
     @GetMapping
-    public List<ItemDto> findAllByUserId(
+    public List<ItemBookingDto> findAllByUserId(
             @RequestHeader(value = "X-Sharer-User-Id") Long userId
     ) {
         userIsNull(userId);

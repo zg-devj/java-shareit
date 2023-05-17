@@ -1,7 +1,9 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import ru.practicum.shareit.booking.dto.BookingShort;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +18,12 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b from Booking as b where b.id=?1 and b.item.owner.id=?2")
     Optional<Booking> findBookingForApprove(Long bookingId, Long userId);
+
+    @Query("select new ru.practicum.shareit.booking.dto.BookingShort(b.id, b.booker.id) " +
+            "from Booking as b " +
+            "where b.item.id=?2 and b.item.owner.id=?1 " +
+            "order by b.start asc ")
+    List<BookingShort> findBookingLastAndNext(Long userId, Long itemId, Pageable pageable);
 
     List<Booking> findAllByBooker_IdOrderByStartDesc(Long bookerId);
 
