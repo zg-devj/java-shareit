@@ -14,8 +14,10 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -86,15 +88,57 @@ public class BookingServiceImpl implements BookingService {
         }
         switch (state) {
             case WAITING:
-            case CURRENT:
-            case REJECTED:
-            case PAST:
-            case FUTURE:
                 if (isOwner) {
-                    List<Booking> list = bookingRepository.findAllByItem_OwnerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
+                    List<Booking> list = bookingRepository
+                            .findAllByItem_OwnerIdAndStatusEqualsOrderByStartDesc(userId, BookingStatus.WAITING);
                     return BookingMapper.toBookingDto(list);
                 } else {
-                    List<Booking> list = bookingRepository.findAllByBooker_IdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
+                    List<Booking> list = bookingRepository
+                            .findAllByBooker_IdAndStatusEqualsOrderByStartDesc(userId, BookingStatus.WAITING);
+                    return BookingMapper.toBookingDto(list);
+                }
+            case CURRENT:
+                LocalDateTime now = LocalDateTime.now();
+                if (isOwner) {
+                    List<Booking> list = bookingRepository
+                            .findAllByItem_OwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, now, now);
+                    return BookingMapper.toBookingDto(list);
+                } else {
+                    List<Booking> list = bookingRepository
+                            .findAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(userId, now, now);
+                    return BookingMapper.toBookingDto(list);
+                }
+            case REJECTED:
+                Set<BookingStatus> statusSet = new HashSet<>();
+                statusSet.add(BookingStatus.REJECTED);
+                statusSet.add(BookingStatus.CANCELED);
+                if (isOwner) {
+                    List<Booking> list = bookingRepository
+                            .findAllByItem_OwnerIdAndStatusInOrderByStartDesc(userId, statusSet);
+                    return BookingMapper.toBookingDto(list);
+                } else {
+                    List<Booking> list = bookingRepository
+                            .findAllByBooker_IdAndStatusInOrderByStartDesc(userId, statusSet);
+                    return BookingMapper.toBookingDto(list);
+                }
+            case PAST:
+                if (isOwner) {
+                    List<Booking> list = bookingRepository
+                            .findAllByItem_OwnerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
+                    return BookingMapper.toBookingDto(list);
+                } else {
+                    List<Booking> list = bookingRepository
+                            .findAllByBooker_IdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
+                    return BookingMapper.toBookingDto(list);
+                }
+            case FUTURE:
+                if (isOwner) {
+                    List<Booking> list = bookingRepository
+                            .findAllByItem_OwnerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
+                    return BookingMapper.toBookingDto(list);
+                } else {
+                    List<Booking> list = bookingRepository
+                            .findAllByBooker_IdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
                     return BookingMapper.toBookingDto(list);
                 }
             case ALL:

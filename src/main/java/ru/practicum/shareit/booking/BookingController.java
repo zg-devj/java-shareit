@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingNewDto;
@@ -9,16 +8,12 @@ import ru.practicum.shareit.exceptions.BadRequestException;
 
 import java.util.List;
 
-/**
- * TODO Sprint add-bookings.
- */
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 public class BookingController {
 
     private final BookingService bookingService;
-    private final BookingRepository bookingRepository;
 
     @PostMapping
     public BookingDto create(
@@ -72,12 +67,5 @@ public class BookingController {
             throw new BadRequestException("Unknown state: " + state);
         }
         return bookingService.getAllBookings(userId, state1, true);
-    }
-
-    @Transactional
-    @GetMapping("/info")
-    public List<Booking> info() {
-        List<Booking> bookings = bookingRepository.findAllByItem_OwnerId(4L);
-        return bookings;
     }
 }
