@@ -6,11 +6,10 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserMapper {
-    public static UserDto toUserDto(User user) {
+    public static UserDto userToDto(User user) {
         return UserDto.builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -18,13 +17,13 @@ public class UserMapper {
                 .build();
     }
 
-    public static List<UserDto> toUserDto(Iterable<User> users) {
-        return StreamSupport.stream(users.spliterator(), false)
-                .map(UserMapper::toUserDto)
+    public static List<UserDto> userToDto(List<User> users) {
+        return users.stream()
+                .map(UserMapper::userToDto)
                 .collect(Collectors.toList());
     }
 
-    public static User toUser(UserDto userDto) {
+    public static User dtoToUser(UserDto userDto) {
         return User.builder()
                 .id(userDto.getId())
                 .name(userDto.getName())

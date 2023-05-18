@@ -54,7 +54,7 @@ public class BookingController {
             throw new BadRequestException("Unknown state: " + state);
         }
 
-        return bookingService.getAllBookings(userId, state1, false);
+        return bookingService.getAllBookings(userId, state1);
     }
 
     @GetMapping("/owner")
@@ -68,6 +68,6 @@ public class BookingController {
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("Unknown state: " + state);
         }
-        return bookingService.getAllBookings(userId, state1, true);
+        return bookingService.getAllBookingsForOwner(userId, state1);
     }
 }

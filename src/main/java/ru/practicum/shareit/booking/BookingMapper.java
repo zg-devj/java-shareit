@@ -12,13 +12,11 @@ import ru.practicum.shareit.user.UserMapper;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BookingMapper {
 
-
-    public static Booking toBooking(BookingNewDto bookingNewDto, Item item, User user) {
+    public static Booking dtoToBooking(BookingNewDto bookingNewDto, Item item, User user) {
 
         return Booking.builder()
                 .booker(user)
@@ -29,7 +27,7 @@ public class BookingMapper {
                 .build();
     }
 
-    public static BookingDto toBookingDto(Booking booking) {
+    public static BookingDto bookingToDto(Booking booking) {
         String pattern = "yyyy-MM-dd'T'HH:mm:ss";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         return BookingDto.builder()
@@ -37,14 +35,14 @@ public class BookingMapper {
                 .start(booking.getStart().format(formatter))
                 .end(booking.getEnd().format(formatter))
                 .status(booking.getStatus().name())
-                .booker(UserMapper.toUserDto(booking.getBooker()))
-                .item(ItemMapper.toItemDto(booking.getItem()))
+                .booker(UserMapper.userToDto(booking.getBooker()))
+                .item(ItemMapper.itemToDto(booking.getItem()))
                 .build();
     }
 
-    public static List<BookingDto> toBookingDto(Iterable<Booking> bookings) {
-        return StreamSupport.stream(bookings.spliterator(), false)
-                .map(BookingMapper::toBookingDto)
+    public static List<BookingDto> bookingToDto(List<Booking> bookings) {
+        return bookings.stream()
+                .map(BookingMapper::bookingToDto)
                 .collect(Collectors.toList());
     }
 }

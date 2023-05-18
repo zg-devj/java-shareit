@@ -6,11 +6,10 @@ import ru.practicum.shareit.item.dto.CommentDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentMapper {
-    public static CommentDto toCommentDto(Comment comment) {
+    public static CommentDto commentToDto(Comment comment) {
         return CommentDto.builder()
                 .id(comment.getId())
                 .authorName(comment.getAuthor().getName())
@@ -19,9 +18,9 @@ public class CommentMapper {
                 .build();
     }
 
-    public static List<CommentDto> toCommentDto(Iterable<Comment> comments) {
-        return StreamSupport.stream(comments.spliterator(), false)
-                .map(CommentMapper::toCommentDto)
+    public static List<CommentDto> commentToDto(List<Comment> comments) {
+        return comments.stream()
+                .map(CommentMapper::commentToDto)
                 .collect(Collectors.toList());
     }
 }

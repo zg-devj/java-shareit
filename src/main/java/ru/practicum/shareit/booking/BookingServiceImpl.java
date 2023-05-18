@@ -14,10 +14,7 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -44,9 +41,9 @@ public class BookingServiceImpl implements BookingService {
             throw new BadRequestException(
                     String.format("Вещь c id=%d не доступна для бронирования.", bookingNewDto.getItemId()));
         }
-        Booking booking = BookingMapper.toBooking(bookingNewDto, item, user);
+        Booking booking = BookingMapper.dtoToBooking(bookingNewDto, item, user);
         Booking saved = bookingRepository.save(booking);
-        return BookingMapper.toBookingDto(saved);
+        return BookingMapper.bookingToDto(saved);
     }
 
     @Override
@@ -67,7 +64,7 @@ public class BookingServiceImpl implements BookingService {
         } else {
             booking.setStatus(BookingStatus.REJECTED);
         }
-        return BookingMapper.toBookingDto(bookingRepository.save(booking));
+        return BookingMapper.bookingToDto(bookingRepository.save(booking));
     }
 
     @Override
@@ -75,78 +72,71 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findBookingByOwnerOrBooker(bookingId, userId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Бронирование c id=%d не найден.", bookingId)));
-        return BookingMapper.toBookingDto(booking);
+        return BookingMapper.bookingToDto(booking);
     }
 
     @Override
-    public List<BookingDto> getAllBookings(Long userId, State state, boolean isOwner) {
+    public List<BookingDto> getAllBookings(Long userId, State state) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException(String.format("Пользователь c id=%d не найден.", userId));
         }
+        LocalDateTime now = LocalDateTime.now();
         switch (state) {
             case WAITING:
-                if (isOwner) {
-                    List<Booking> list = bookingRepository
-                            .findAllByItem_OwnerIdAndStatusEqualsOrderByStartDesc(userId, BookingStatus.WAITING);
-                    return BookingMapper.toBookingDto(list);
-                } else {
-                    List<Booking> list = bookingRepository
-                            .findAllByBooker_IdAndStatusEqualsOrderByStartDesc(userId, BookingStatus.WAITING);
-                    return BookingMapper.toBookingDto(list);
-                }
+                return BookingMapper.bookingToDto(bookingRepository
+                        .findAllByBookerIdAndStatusEqualsOrderByStartDesc(userId,
+                                BookingStatus.WAITING));
             case CURRENT:
-                LocalDateTime now = LocalDateTime.now();
-                if (isOwner) {
-                    List<Booking> list = bookingRepository
-                            .findAllByItem_OwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, now, now);
-                    return BookingMapper.toBookingDto(list);
-                } else {
-                    List<Booking> list = bookingRepository
-                            .findAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(userId, now, now);
-                    return BookingMapper.toBookingDto(list);
-                }
+                return BookingMapper.bookingToDto(bookingRepository
+                        .findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
+                                now, now));
             case REJECTED:
-                Set<BookingStatus> statusSet = new HashSet<>();
-                statusSet.add(BookingStatus.REJECTED);
-                statusSet.add(BookingStatus.CANCELED);
-                if (isOwner) {
-                    List<Booking> list = bookingRepository
-                            .findAllByItem_OwnerIdAndStatusInOrderByStartDesc(userId, statusSet);
-                    return BookingMapper.toBookingDto(list);
-                } else {
-                    List<Booking> list = bookingRepository
-                            .findAllByBooker_IdAndStatusInOrderByStartDesc(userId, statusSet);
-                    return BookingMapper.toBookingDto(list);
-                }
+                Set<BookingStatus> statusSet = EnumSet.of(BookingStatus.REJECTED,
+                        BookingStatus.CANCELED);
+                return BookingMapper.bookingToDto(bookingRepository
+                        .findAllByBookerIdAndStatusInOrderByStartDesc(userId, statusSet));
             case PAST:
-                if (isOwner) {
-                    List<Booking> list = bookingRepository
-                            .findAllByItem_OwnerIdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
-                    return BookingMapper.toBookingDto(list);
-                } else {
-                    List<Booking> list = bookingRepository
-                            .findAllByBooker_IdAndEndBeforeOrderByStartDesc(userId, LocalDateTime.now());
-                    return BookingMapper.toBookingDto(list);
-                }
+                return BookingMapper.bookingToDto(bookingRepository
+                        .findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, now));
             case FUTURE:
-                if (isOwner) {
-                    List<Booking> list = bookingRepository
-                            .findAllByItem_OwnerIdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
-                    return BookingMapper.toBookingDto(list);
-                } else {
-                    List<Booking> list = bookingRepository
-                            .findAllByBooker_IdAndStartAfterOrderByStartDesc(userId, LocalDateTime.now());
-                    return BookingMapper.toBookingDto(list);
-                }
+                return BookingMapper.bookingToDto(bookingRepository
+                        .findAllByBookerIdAndStartAfterOrderByStartDesc(userId, now));
             case ALL:
             default:
-                if (isOwner) {
-                    List<Booking> list = bookingRepository.findAllByItem_OwnerIdOrderByStartDesc(userId);
-                    return BookingMapper.toBookingDto(list);
-                } else {
-                    List<Booking> list = bookingRepository.findAllByBooker_IdOrderByStartDesc(userId);
-                    return BookingMapper.toBookingDto(list);
-                }
+                return BookingMapper.bookingToDto(bookingRepository.
+                        findAllByBookerIdOrderByStartDesc(userId));
+        }
+    }
+
+    @Override
+    public List<BookingDto> getAllBookingsForOwner(Long userId, State state) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException(String.format("Пользователь c id=%d не найден.", userId));
+        }
+        LocalDateTime now = LocalDateTime.now();
+        switch (state) {
+            case WAITING:
+                return BookingMapper.bookingToDto(bookingRepository
+                        .findAllByItemOwnerIdAndStatusEqualsOrderByStartDesc(userId, BookingStatus.WAITING));
+            case CURRENT:
+                return BookingMapper.bookingToDto(bookingRepository
+                        .findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
+                                now, now));
+            case REJECTED:
+                Set<BookingStatus> statusSet = EnumSet.of(BookingStatus.REJECTED,
+                        BookingStatus.CANCELED);
+                return BookingMapper.bookingToDto(bookingRepository
+                        .findAllByItemOwnerIdAndStatusInOrderByStartDesc(userId, statusSet));
+            case PAST:
+                return BookingMapper.bookingToDto(bookingRepository
+                        .findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(userId, now));
+            case FUTURE:
+                return BookingMapper.bookingToDto(bookingRepository
+                        .findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId, now));
+            case ALL:
+            default:
+                return BookingMapper.bookingToDto(bookingRepository.
+                        findAllByItemOwnerIdOrderByStartDesc(userId));
         }
     }
 

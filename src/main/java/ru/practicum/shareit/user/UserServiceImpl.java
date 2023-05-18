@@ -22,9 +22,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto saveUser(UserDto userDto) {
-        User saved = userRepository.save(UserMapper.toUser(userDto));
+        User saved = userRepository.save(UserMapper.dtoToUser(userDto));
         log.info("Сохранен пользователь {}", saved.getId());
-        return UserMapper.toUserDto(saved);
+        return UserMapper.userToDto(saved);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
             log.info("Обновляется имя пользователя c id={}.", updated.getId());
             updated.setName(userDto.getName());
         }
-        return UserMapper.toUserDto(userRepository.save(updated));
+        return UserMapper.userToDto(userRepository.save(updated));
     }
 
     @Override
@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id=%d не найден", userId)));
         log.info("Возращен пользовател с id={}.", user.getId());
-        return UserMapper.toUserDto(user);
+        return UserMapper.userToDto(user);
     }
 
     @Override
@@ -69,6 +69,6 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> findAllUsers() {
         List<User> users = userRepository.findAll();
         log.info("Возвращено {} пользователей.", users.size());
-        return UserMapper.toUserDto(users);
+        return UserMapper.userToDto(users);
     }
 }

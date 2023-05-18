@@ -43,38 +43,38 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                       LocalDateTime now, Pageable pageable);
 
     // для ALL
-    List<Booking> findAllByBooker_IdOrderByStartDesc(Long bookerId);
+    List<Booking> findAllByBookerIdOrderByStartDesc(Long bookerId);
 
     // для ALL если owner
-    List<Booking> findAllByItem_OwnerIdOrderByStartDesc(Long ownerId);
+    List<Booking> findAllByItemOwnerIdOrderByStartDesc(Long ownerId);
 
     // для FUTURE
-    List<Booking> findAllByBooker_IdAndStartAfterOrderByStartDesc(Long bookerId, LocalDateTime dateTime);
+    List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(Long bookerId, LocalDateTime dateTime);
 
     // для FUTURE если owner
-    List<Booking> findAllByItem_OwnerIdAndStartAfterOrderByStartDesc(Long ownerId, LocalDateTime dateTime);
+    List<Booking> findAllByItemOwnerIdAndStartAfterOrderByStartDesc(Long ownerId, LocalDateTime dateTime);
 
     // для WAITING
-    List<Booking> findAllByBooker_IdAndStatusEqualsOrderByStartDesc(Long bookerId, BookingStatus status);
+    List<Booking> findAllByBookerIdAndStatusEqualsOrderByStartDesc(Long bookerId, BookingStatus status);
 
     // для WAITING если owner
-    List<Booking> findAllByItem_OwnerIdAndStatusEqualsOrderByStartDesc(Long ownerId, BookingStatus status);
+    List<Booking> findAllByItemOwnerIdAndStatusEqualsOrderByStartDesc(Long ownerId, BookingStatus status);
 
     // для REJECTED
-    List<Booking> findAllByBooker_IdAndStatusInOrderByStartDesc(Long bookerId, Set<BookingStatus> statusSet);
+    List<Booking> findAllByBookerIdAndStatusInOrderByStartDesc(Long bookerId, Set<BookingStatus> statusSet);
 
     // для REJECTED если owner
-    List<Booking> findAllByItem_OwnerIdAndStatusInOrderByStartDesc(Long ownerId, Set<BookingStatus> statusSet);
+    List<Booking> findAllByItemOwnerIdAndStatusInOrderByStartDesc(Long ownerId, Set<BookingStatus> statusSet);
 
     // для CURRENT
-    List<Booking> findAllByBooker_IdAndStartBeforeAndEndAfterOrderByStartDesc(Long bookerId, LocalDateTime now1, LocalDateTime now2);
+    List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(Long bookerId, LocalDateTime now1, LocalDateTime now2);
 
     // для CURRENT если owner
-    List<Booking> findAllByItem_OwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(Long bookerId, LocalDateTime now1, LocalDateTime now2);
+    List<Booking> findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(Long bookerId, LocalDateTime now1, LocalDateTime now2);
 
     // для PAST
-    List<Booking> findAllByBooker_IdAndEndBeforeOrderByStartDesc(Long bookerId, LocalDateTime now);
+    List<Booking> findAllByBookerIdAndEndBeforeOrderByStartDesc(Long bookerId, LocalDateTime now);
 
     // для PAST если owner
-    List<Booking> findAllByItem_OwnerIdAndEndBeforeOrderByStartDesc(Long bookerId, LocalDateTime now);
+    List<Booking> findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(Long bookerId, LocalDateTime now);
 }

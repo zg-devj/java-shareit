@@ -224,8 +224,8 @@ class UserServiceTest {
         Assertions.assertThat(users)
                 .isNotNull()
                 .hasSize(2)
-                .contains(UserMapper.toUserDto(user),
-                        UserMapper.toUserDto(user2));
+                .contains(UserMapper.userToDto(user),
+                        UserMapper.userToDto(user2));
         Mockito.verify(userRepository, Mockito.times(1)).findAll();
         Mockito.verifyNoMoreInteractions(userRepository);
     }

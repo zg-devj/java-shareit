@@ -39,11 +39,11 @@ public class ItemServiceImpl implements ItemService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Пользователь c id=%d не найдена", userId)));
-        Item item = ItemMapper.toItem(itemDto);
+        Item item = ItemMapper.dtoToItem(itemDto);
         item.setOwner(user);
         Item saved = itemRepository.save(item);
         log.info("Пользователь id={} добавил вещь с id={}", userId, saved.getId());
-        return ItemMapper.toItemDto(saved);
+        return ItemMapper.itemToDto(saved);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class ItemServiceImpl implements ItemService {
             updated.setAvailable(itemDto.getAvailable());
         }
         log.info("Пользователь id={} обновил вещь с id={}", userId, updated.getId());
-        return ItemMapper.toItemDto(itemRepository.save(updated));
+        return ItemMapper.itemToDto(itemRepository.save(updated));
     }
 
     private Set<BookingStatus> getIn() {
@@ -107,7 +107,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Вещь c id=%d не найдена", itemId)));
-        List<Comment> comments = commentRepository.findCommentsByItem_IdOrderByCreatedAsc(item.getId());
+        List<Comment> comments = commentRepository.findCommentsByItemIdOrderByCreatedAsc(item.getId());
         return ItemMapper.toItemBookingDto(item,
                 getLastBooking(item.getId(), userId),
                 getNextBooking(item.getId(), userId),
@@ -119,7 +119,7 @@ public class ItemServiceImpl implements ItemService {
         List<ItemBookingDto> returned = new ArrayList<>();
         List<Item> items = itemRepository.findAllByOwnerIdOrderByIdAsc(userId);
         for (Item item : items) {
-            List<Comment> comments = commentRepository.findCommentsByItem_IdOrderByCreatedAsc(item.getId());
+            List<Comment> comments = commentRepository.findCommentsByItemIdOrderByCreatedAsc(item.getId());
             returned.add(ItemMapper.toItemBookingDto(item,
                     getLastBooking(item.getId(), userId),
                     getNextBooking(item.getId(), userId),
@@ -133,7 +133,7 @@ public class ItemServiceImpl implements ItemService {
         if (search != null && search.isBlank()) {
             return new ArrayList<>();
         }
-        return ItemMapper.toItemDto(
+        return ItemMapper.itemToDto(
                 itemRepository.search(search));
     }
 
@@ -159,6 +159,6 @@ public class ItemServiceImpl implements ItemService {
                 .created(LocalDateTime.now())
                 .build();
         Comment saved = commentRepository.save(commentNew);
-        return CommentMapper.toCommentDto(saved);
+        return CommentMapper.commentToDto(saved);
     }
 }
