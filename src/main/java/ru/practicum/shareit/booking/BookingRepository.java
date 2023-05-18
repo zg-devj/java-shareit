@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,6 +12,19 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
+
+    // проверяем, было ли бронирование вещи пользователем
+    Optional<Booking> findBookingByBooker_IdAndItem_IdAndStartBeforeAndEndBeforeAndStatusEquals(Long bookerId,
+                                                                                                Long itemId,
+                                                                                                LocalDateTime now1,
+                                                                                                LocalDateTime now2,
+                                                                                                BookingStatus status);
+
+    @Query("select b from Booking as b " +
+            "where b.booker.id=?1 and b.item.id=?2 and " +
+            "b.end<?3 and b.status=?4 order by b.end asc ")
+    Page<Booking> findBookingForComment(Long bookerId, Long itemId,
+                                        LocalDateTime now, BookingStatus status, Pageable pageable);
 
     @Query("select b " +
             "from Booking as b " +

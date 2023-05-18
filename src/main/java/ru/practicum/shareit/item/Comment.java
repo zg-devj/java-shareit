@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Data
@@ -32,6 +33,8 @@ public class Comment {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
+
+    private LocalDateTime created;
 
     @Override
     public boolean equals(Object o) {

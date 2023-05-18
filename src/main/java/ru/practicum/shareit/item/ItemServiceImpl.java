@@ -2,14 +2,19 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingShort;
+import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.exceptions.ForbiddenException;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentNewDto;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.User;
@@ -102,7 +107,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Вещь c id=%d не найдена", itemId)));
-        List<Comment> comments = commentRepository.findCommentsByAuthor_Id(userId);
+        List<Comment> comments = commentRepository.findCommentsByItem_Id(item.getId());
         return ItemMapper.toItemBookingDto(item,
                 getLastBooking(item.getId(), userId),
                 getNextBooking(item.getId(), userId),
@@ -114,7 +119,7 @@ public class ItemServiceImpl implements ItemService {
         List<ItemBookingDto> returned = new ArrayList<>();
         List<Item> items = itemRepository.findAllByOwnerIdOrderByIdAsc(userId);
         for (Item item : items) {
-            List<Comment> comments = commentRepository.findCommentsByAuthor_Id(userId);
+            List<Comment> comments = commentRepository.findCommentsByItem_Id(item.getId());
             returned.add(ItemMapper.toItemBookingDto(item,
                     getLastBooking(item.getId(), userId),
                     getNextBooking(item.getId(), userId),
@@ -130,5 +135,30 @@ public class ItemServiceImpl implements ItemService {
         }
         return ItemMapper.toItemDto(
                 itemRepository.search(search));
+    }
+
+    @Override
+    @Transactional
+    public CommentDto addComment(Long userId, Long itemId, CommentNewDto comment) {
+        if (comment.getText() != null && comment.getText().isEmpty()) {
+            throw new BadRequestException("Текст комментария не должен быть пустым.");
+        }
+        LocalDateTime now = LocalDateTime.now();
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        Page<Booking> page =
+                bookingRepository.findBookingForComment(userId, itemId,
+                        now, BookingStatus.APPROVED, pageRequest);
+
+        Booking booking = page.get().findFirst().orElseThrow(
+                () -> new BadRequestException("Не верный запрос на комментарий"));
+
+        Comment commentNew = Comment.builder()
+                .author(booking.getBooker())
+                .text(comment.getText())
+                .item(booking.getItem())
+                .created(LocalDateTime.now())
+                .build();
+        Comment saved = commentRepository.save(commentNew);
+        return CommentMapper.toCommentDto(saved);
     }
 }

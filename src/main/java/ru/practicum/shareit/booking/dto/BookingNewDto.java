@@ -9,11 +9,12 @@ import java.time.LocalDateTime;
 
 @Builder
 @Getter
-//@Validated
+@Validated
 public class BookingNewDto {
+    @NotNull
     private Long itemId;
-    //@NotNull
+    @NotNull
     private LocalDateTime start;
-    //@NotNull
+    @NotNull
     private LocalDateTime end;
 }

@@ -5,5 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    List<Comment> findCommentsByAuthor_Id(Long authorId);
+
+    // Возвращаем комментарии для вещи
+    List<Comment> findCommentsByItem_Id(Long itemId);
 }

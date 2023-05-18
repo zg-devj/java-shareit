@@ -22,28 +22,6 @@ public class ItemMapper {
     }
 
     public static ItemBookingDto toItemBookingDto(
-            Item item, List<BookingShort> list, List<Comment> comments) {
-        BookingShort last = null;
-        BookingShort next = null;
-        if (list.size() == 1) {
-            last = new BookingShort(list.get(0).getId(), list.get(0).getBookerId());
-        }
-        if (list.size() == 2) {
-            last = new BookingShort(list.get(0).getId(), list.get(0).getBookerId());
-            next = new BookingShort(list.get(1).getId(), list.get(1).getBookerId());
-        }
-        return ItemBookingDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.getAvailable())
-                .lastBooking(last)
-                .nextBooking(next)
-                .comments(comments)
-                .build();
-    }
-
-    public static ItemBookingDto toItemBookingDto(
             Item item, BookingShort last, BookingShort next, List<Comment> comments) {
         return ItemBookingDto.builder()
                 .id(item.getId())
@@ -52,7 +30,7 @@ public class ItemMapper {
                 .available(item.getAvailable())
                 .lastBooking(last)
                 .nextBooking(next)
-                .comments(comments)
+                .comments(CommentMapper.toCommentDto(comments))
                 .build();
     }
 
