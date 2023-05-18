@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto updateUser(UserDto userDto) {
-
+        // проверка
         if (userDto.getEmail() != null && userRepository.canNotUpdate(userDto.getId(), userDto.getEmail())) {
             throw new UserAlreadyExistException("Пользователь с таким email существует.");
         }
