@@ -15,6 +15,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Slf4j
@@ -25,6 +26,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -69,8 +71,30 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.toItemDto(itemRepository.save(updated));
     }
 
-    private Set<BookingStatus> getNotIn() {
-        return new HashSet<>(List.of(BookingStatus.REJECTED, BookingStatus.CANCELED));
+    private Set<BookingStatus> getIn() {
+        return new HashSet<>(List.of(BookingStatus.APPROVED));
+    }
+
+    private BookingShort getLastBooking(Long itemId, Long userId) {
+        PageRequest page = PageRequest.of(0, 1);
+        LocalDateTime now = LocalDateTime.now();
+        List<BookingShort> lastList = bookingRepository.getLastBooking(itemId, userId,
+                getIn(), now, page);
+        if (lastList.size() > 0) {
+            return lastList.get(0);
+        }
+        return null;
+    }
+
+    private BookingShort getNextBooking(Long itemId, Long userId) {
+        PageRequest page = PageRequest.of(0, 1);
+        LocalDateTime now = LocalDateTime.now();
+        List<BookingShort> nextList = bookingRepository.getNextBooking(itemId, userId,
+                getIn(), now, page);
+        if (nextList.size() > 0) {
+            return nextList.get(0);
+        }
+        return null;
     }
 
     @Override
@@ -78,19 +102,23 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Вещь c id=%d не найдена", itemId)));
-        PageRequest page = PageRequest.of(0, 2);
-        List<BookingShort> lastAndNext = bookingRepository.findBookingLastAndNext(userId, itemId, getNotIn(), page);
-        return ItemMapper.toItemBookingDto(item, lastAndNext);
+        List<Comment> comments = commentRepository.findCommentsByAuthor_Id(userId);
+        return ItemMapper.toItemBookingDto(item,
+                getLastBooking(item.getId(), userId),
+                getNextBooking(item.getId(), userId),
+                comments);
     }
 
     @Override
     public List<ItemBookingDto> findAllByUserId(Long userId) {
         List<ItemBookingDto> returned = new ArrayList<>();
         List<Item> items = itemRepository.findAllByOwnerIdOrderByIdAsc(userId);
-        PageRequest page = PageRequest.of(0, 2);
         for (Item item : items) {
-            List<BookingShort> lastAndNext = bookingRepository.findBookingLastAndNext(userId, item.getId(), getNotIn(), page);
-            returned.add(ItemMapper.toItemBookingDto(item, lastAndNext));
+            List<Comment> comments = commentRepository.findCommentsByAuthor_Id(userId);
+            returned.add(ItemMapper.toItemBookingDto(item,
+                    getLastBooking(item.getId(), userId),
+                    getNextBooking(item.getId(), userId),
+                    comments));
         }
         return returned;
     }

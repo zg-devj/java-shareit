@@ -20,12 +20,19 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select b from Booking as b where b.id=?1 and b.item.owner.id=?2")
     Optional<Booking> findBookingForApprove(Long bookingId, Long userId);
 
-    // Последнее и последующее бронирование
     @Query("select new ru.practicum.shareit.booking.dto.BookingShort(b.id, b.booker.id) " +
             "from Booking as b " +
-            "where b.item.id=?2 and b.item.owner.id=?1 and b.status not in (?3)" +
-            "order by b.start asc ")
-    List<BookingShort> findBookingLastAndNext(Long userId, Long itemId, Set<BookingStatus> statuses, Pageable pageable);
+            "where b.item.id=?1 and b.item.owner.id=?2 and b.status in (?3) and b.start>?4 " +
+            "order by b.start asc")
+    List<BookingShort> getNextBooking(Long itemId, Long userId, Set<BookingStatus> statuses,
+                                      LocalDateTime now, Pageable pageable);
+
+    @Query("select new ru.practicum.shareit.booking.dto.BookingShort(b.id, b.booker.id) " +
+            "from Booking as b " +
+            "where b.item.id=?1 and b.item.owner.id=?2 and b.status in (?3) and b.start<?4 " +
+            "order by b.start desc")
+    List<BookingShort> getLastBooking(Long itemId, Long userId, Set<BookingStatus> statuses,
+                                      LocalDateTime now, Pageable pageable);
 
     // для ALL
     List<Booking> findAllByBooker_IdOrderByStartDesc(Long bookerId);
@@ -57,7 +64,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     // для CURRENT если owner
     List<Booking> findAllByItem_OwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(Long bookerId, LocalDateTime now1, LocalDateTime now2);
 
-    // для Past
+    // для PAST
     List<Booking> findAllByBooker_IdAndEndBeforeOrderByStartDesc(Long bookerId, LocalDateTime now);
 
     // для PAST если owner
