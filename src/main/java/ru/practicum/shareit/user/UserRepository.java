@@ -5,8 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    //Optional<User> findByEmail(String email);
-
     // Если найден email не принадлежащий пользователю, то обновить данные нельзя
     @Query("select case when count(u) >0 then true else false end " +
             "from User as u " +

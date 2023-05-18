@@ -2,16 +2,13 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -21,14 +18,12 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public UserDto create(
-            @Valid @RequestBody UserDto userDto,
-            HttpServletResponse response
+            @Valid @RequestBody UserDto userDto
     ) {
         log.info("POST /users - создание пользователя");
-        UserDto created = userService.saveUser(userDto);
-        response.setStatus(201);
-        return created;
+        return userService.saveUser(userDto);
     }
 
     @PatchMapping("/{id}")
@@ -50,13 +45,12 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(
-            @PathVariable Long id,
-            HttpServletResponse response
+            @PathVariable Long id
     ) {
         log.info("DELETE /users/{} - удалить пользователя", id);
         userService.deleteUser(id);
-        response.setStatus(204);
     }
 
     @GetMapping

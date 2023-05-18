@@ -37,7 +37,6 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Пользователь c id=%d не найден.", userId)));
 
-        //Item item = itemRepository.findById(bookingNewDto.getItemId())
         Item item = itemRepository.findByIdAndOwnerNot(bookingNewDto.getItemId(), user)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Вещь c id=%d не найдена.", bookingNewDto.getItemId())));
@@ -56,9 +55,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findBookingForApprove(bookingId, userId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Бронирование c id=%d не найден.", bookingId)));
-        if (approve && booking.getStatus() == BookingStatus.APPROVED)
-        //        ||(!approve && booking.getStatus() != BookingStatus.APPROVED))
-        {
+        if (approve && booking.getStatus() == BookingStatus.APPROVED) {
             throw new BadRequestException("Бронирование уже имеет устанавливаемый статус.");
         }
         User owner = booking.getItem().getOwner();

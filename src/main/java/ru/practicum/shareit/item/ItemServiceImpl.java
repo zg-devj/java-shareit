@@ -107,7 +107,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Вещь c id=%d не найдена", itemId)));
-        List<Comment> comments = commentRepository.findCommentsByItem_Id(item.getId());
+        List<Comment> comments = commentRepository.findCommentsByItem_IdOrderByCreatedAsc(item.getId());
         return ItemMapper.toItemBookingDto(item,
                 getLastBooking(item.getId(), userId),
                 getNextBooking(item.getId(), userId),
@@ -119,7 +119,7 @@ public class ItemServiceImpl implements ItemService {
         List<ItemBookingDto> returned = new ArrayList<>();
         List<Item> items = itemRepository.findAllByOwnerIdOrderByIdAsc(userId);
         for (Item item : items) {
-            List<Comment> comments = commentRepository.findCommentsByItem_Id(item.getId());
+            List<Comment> comments = commentRepository.findCommentsByItem_IdOrderByCreatedAsc(item.getId());
             returned.add(ItemMapper.toItemBookingDto(item,
                     getLastBooking(item.getId(), userId),
                     getNextBooking(item.getId(), userId),

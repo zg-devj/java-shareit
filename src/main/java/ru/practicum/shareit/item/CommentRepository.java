@@ -7,5 +7,5 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     // Возвращаем комментарии для вещи
-    List<Comment> findCommentsByItem_Id(Long itemId);
+    List<Comment> findCommentsByItem_IdOrderByCreatedAsc(Long itemId);
 }
