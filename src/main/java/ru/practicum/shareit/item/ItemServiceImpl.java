@@ -21,7 +21,9 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -76,15 +78,11 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.itemToDto(itemRepository.save(updated));
     }
 
-    private Set<BookingStatus> getIn() {
-        return new HashSet<>(List.of(BookingStatus.APPROVED));
-    }
-
     private BookingShort getLastBooking(Long itemId, Long userId) {
         PageRequest page = PageRequest.of(0, 1);
         LocalDateTime now = LocalDateTime.now();
         List<BookingShort> lastList = bookingRepository.getLastBooking(itemId, userId,
-                getIn(), now, page);
+                BookingStatus.APPROVED, now, page);
         if (lastList.size() > 0) {
             return lastList.get(0);
         }
@@ -95,7 +93,7 @@ public class ItemServiceImpl implements ItemService {
         PageRequest page = PageRequest.of(0, 1);
         LocalDateTime now = LocalDateTime.now();
         List<BookingShort> nextList = bookingRepository.getNextBooking(itemId, userId,
-                getIn(), now, page);
+                BookingStatus.APPROVED, now, page);
         if (nextList.size() > 0) {
             return nextList.get(0);
         }

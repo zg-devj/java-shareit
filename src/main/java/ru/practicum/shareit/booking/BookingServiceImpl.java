@@ -14,7 +14,10 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -103,8 +106,7 @@ public class BookingServiceImpl implements BookingService {
                         .findAllByBookerIdAndStartAfterOrderByStartDesc(userId, now));
             case ALL:
             default:
-                return BookingMapper.bookingToDto(bookingRepository.
-                        findAllByBookerIdOrderByStartDesc(userId));
+                return BookingMapper.bookingToDto(bookingRepository.findAllByBookerIdOrderByStartDesc(userId));
         }
     }
 
@@ -135,8 +137,7 @@ public class BookingServiceImpl implements BookingService {
                         .findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId, now));
             case ALL:
             default:
-                return BookingMapper.bookingToDto(bookingRepository.
-                        findAllByItemOwnerIdOrderByStartDesc(userId));
+                return BookingMapper.bookingToDto(bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId));
         }
     }
 

@@ -30,16 +30,16 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select new ru.practicum.shareit.booking.dto.BookingShort(b.id, b.booker.id) " +
             "from Booking as b " +
-            "where b.item.id=?1 and b.item.owner.id=?2 and b.status in (?3) and b.start>?4 " +
+            "where b.item.id=?1 and b.item.owner.id=?2 and b.status=?3 and b.start>?4 " +
             "order by b.start asc")
-    List<BookingShort> getNextBooking(Long itemId, Long userId, Set<BookingStatus> statuses,
+    List<BookingShort> getNextBooking(Long itemId, Long userId, BookingStatus status,
                                       LocalDateTime now, Pageable pageable);
 
     @Query("select new ru.practicum.shareit.booking.dto.BookingShort(b.id, b.booker.id) " +
             "from Booking as b " +
-            "where b.item.id=?1 and b.item.owner.id=?2 and b.status in (?3) and b.start<?4 " +
+            "where b.item.id=?1 and b.item.owner.id=?2 and b.status=?3 and b.start<?4 " +
             "order by b.start desc")
-    List<BookingShort> getLastBooking(Long itemId, Long userId, Set<BookingStatus> statuses,
+    List<BookingShort> getLastBooking(Long itemId, Long userId, BookingStatus status,
                                       LocalDateTime now, Pageable pageable);
 
     // для ALL
