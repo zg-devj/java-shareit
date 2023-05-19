@@ -1,3 +1,4 @@
+-- для тестирования
 -- drop table if exists comments;
 -- drop table if exists bookings;
 -- drop table if exists items;
