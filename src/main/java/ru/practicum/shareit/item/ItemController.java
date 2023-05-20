@@ -2,18 +2,17 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exceptions.BadRequestException;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentNewDto;
+import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -21,18 +20,26 @@ import java.util.stream.Collectors;
 public class ItemController {
     private final ItemService itemService;
 
+    @PostMapping(value = "/{itemId}/comment")
+    public CommentDto createComment(
+            @RequestHeader(value = "X-Sharer-User-Id") Long userId,
+            @PathVariable Long itemId,
+            @RequestBody CommentNewDto commentNewDto
+    ) {
+        CommentDto result = itemService.addComment(userId, itemId, commentNewDto);
+        return result;
+    }
+
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ItemDto create(
             @RequestHeader(value = "X-Sharer-User-Id") Long userId,
-            @Valid @RequestBody ItemDto itemDto,
-            HttpServletResponse response
+            @Valid @RequestBody ItemDto itemDto
     ) {
         userIsNull(userId);
         log.info("POST /items - добавление вещи пользователем {}", userId);
-        Item item = ItemMapper.toItem(itemDto);
-        Item created = itemService.saveItem(userId, item);
-        response.setStatus(201);
-        return ItemMapper.toItemDto(created);
+        ItemDto created = itemService.saveItem(userId, itemDto);
+        return created;
     }
 
     @PatchMapping("/{id}")
@@ -43,41 +50,35 @@ public class ItemController {
     ) {
         userIsNull(userId);
         log.info("PATCH /items/{} - обновить вещь", id);
-        Item item = ItemMapper.toItem(itemDto);
-        item.setId(id);
-        Item created = itemService.updateItem(userId, item);
-        return ItemMapper.toItemDto(created);
+        itemDto.setId(id);
+        return itemService.updateItem(userId, itemDto);
     }
 
     @GetMapping("/{id}")
-    public ItemDto findById(
+    public ItemBookingDto findById(
+            @RequestHeader(value = "X-Sharer-User-Id") Long userId,
             @PathVariable Long id
     ) {
+        userIsNull(userId);
         log.info("GET /items/{} - просмотр вещи", id);
-        Item item = itemService.findById(id);
-        return ItemMapper.toItemDto(item);
+        return itemService.findById(id, userId);
     }
 
     @GetMapping
-    public List<ItemDto> findAllByUserId(
+    public List<ItemBookingDto> findAllByUserId(
             @RequestHeader(value = "X-Sharer-User-Id") Long userId
     ) {
         userIsNull(userId);
         log.info("GET /items - просмотр вещей пользователем с id={}", userId);
-        List<Item> items = itemService.findAllByUserId(userId);
-        return items.stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+        return itemService.findAllByUserId(userId);
     }
+
 
     @GetMapping("/search")
     public List<ItemDto> search(
             @RequestParam String text
     ) {
-        List<Item> items = itemService.search(text);
-        return items.stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+        return itemService.search(text);
     }
 
     private void userIsNull(Long userId) {

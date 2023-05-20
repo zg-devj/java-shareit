@@ -18,5 +18,6 @@ public class UserDto {
 
     @NotBlank(message = "Email не может быть пустым или отсутствовать.")
     @Email(message = "Некорректный адрес электронной почты")
+    @Size(max = 512, message = "Email не должна быть больше 512 символов.")
     private String email;
 }

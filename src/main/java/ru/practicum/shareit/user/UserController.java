@@ -2,17 +2,13 @@ package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -22,15 +18,12 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public UserDto create(
-            @Valid @RequestBody UserDto userDto,
-            HttpServletResponse response
+            @Valid @RequestBody UserDto userDto
     ) {
         log.info("POST /users - создание пользователя");
-        User user = UserMapper.toUser(userDto);
-        User created = userService.saveUser(user);
-        response.setStatus(201);
-        return UserMapper.toUserDto(created);
+        return userService.saveUser(userDto);
     }
 
     @PatchMapping("/{id}")
@@ -40,9 +33,7 @@ public class UserController {
     ) {
         log.info("PATCH /users/{} - обновить пользователя", id);
         userDto.setId(id);
-        User user = UserMapper.toUser(userDto);
-        User updated = userService.updateUser(user);
-        return UserMapper.toUserDto(updated);
+        return userService.updateUser(userDto);
     }
 
     @GetMapping("/{id}")
@@ -50,25 +41,21 @@ public class UserController {
             @PathVariable Long id
     ) {
         log.info("GET /users/{} - получение пользователя", id);
-        return UserMapper.toUserDto(userService.findUserById(id));
+        return userService.findUserById(id);
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(
-            @PathVariable Long id,
-            HttpServletResponse response
+            @PathVariable Long id
     ) {
         log.info("DELETE /users/{} - удалить пользователя", id);
         userService.deleteUser(id);
-        response.setStatus(204);
     }
 
     @GetMapping
     public List<UserDto> findAll() {
         log.info("GET /users - вернуть всех пользователей пользователя");
-        List<User> users = userService.findAllUsers();
-        return users.stream()
-                .map(UserMapper::toUserDto)
-                .collect(Collectors.toList());
+        return userService.findAllUsers();
     }
 }

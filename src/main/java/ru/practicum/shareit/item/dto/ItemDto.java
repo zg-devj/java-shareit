@@ -2,17 +2,16 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Getter
 @Builder(toBuilder = true)
 public class ItemDto {
+    @Setter
     private Long id;
 
     @NotBlank(message = "Название не может быть пустым или отсутствовать.")
