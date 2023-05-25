@@ -13,21 +13,24 @@ import java.util.Set;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    // проверяем, было ли бронирование вещи пользователем
+    // Проверяем, было ли бронирование вещи пользователем
     @Query("select b from Booking as b " +
             "where b.booker.id=?1 and b.item.id=?2 and " +
             "b.end<?3 and b.status=?4 order by b.end asc ")
     Page<Booking> findBookingForComment(Long bookerId, Long itemId,
                                         LocalDateTime now, BookingStatus status, Pageable pageable);
 
+    // Получение бронирования для владельца или забронировавшего
     @Query("select b " +
             "from Booking as b " +
             "where b.id=?1 and( b.booker.id=?2 or b.item.owner.id=?2 )")
     Optional<Booking> findBookingByOwnerOrBooker(Long id, Long finderId);
 
+    // Получение бронирования владельцем
     @Query("select b from Booking as b where b.id=?1 and b.item.owner.id=?2")
     Optional<Booking> findBookingForApprove(Long bookingId, Long userId);
 
+    // Получение следующего бронирования вещи владельца
     @Query("select new ru.practicum.shareit.booking.dto.BookingShort(b.id, b.booker.id) " +
             "from Booking as b " +
             "where b.item.id=?1 and b.item.owner.id=?2 and b.status=?3 and b.start>?4 " +
@@ -35,6 +38,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<BookingShort> getNextBooking(Long itemId, Long userId, BookingStatus status,
                                       LocalDateTime now, Pageable pageable);
 
+    // Получение последнего бронирования вещи владельца
     @Query("select new ru.practicum.shareit.booking.dto.BookingShort(b.id, b.booker.id) " +
             "from Booking as b " +
             "where b.item.id=?1 and b.item.owner.id=?2 and b.status=?3 and b.start<?4 " +

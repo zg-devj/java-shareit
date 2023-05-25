@@ -28,6 +28,7 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
+    // Создание бронирования
     @Override
     @Transactional
     public BookingDto createBooking(Long userId, BookingNewDto bookingNewDto) {
@@ -49,6 +50,7 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.bookingToDto(saved);
     }
 
+    // Одобрение или отказ бронирования владельцем
     @Override
     @Transactional
     public BookingDto approve(Long userId, boolean approve, Long bookingId) {
@@ -70,6 +72,7 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.bookingToDto(bookingRepository.save(booking));
     }
 
+    // Вернуть бронирование для бронирующего или владельца
     @Override
     public BookingDto getBooking(Long userId, Long bookingId) {
         Booking booking = bookingRepository.findBookingByOwnerOrBooker(bookingId, userId)
@@ -78,6 +81,7 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.bookingToDto(booking);
     }
 
+    // Вернуть все бронирования веши бронирующего
     @Override
     public List<BookingDto> getAllBookings(Long userId, State state) {
         if (!userRepository.existsById(userId)) {
@@ -110,6 +114,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    // Вернуть все бронирования веши для владельца
     @Override
     public List<BookingDto> getAllBookingsForOwner(Long userId, State state) {
         if (!userRepository.existsById(userId)) {
@@ -141,6 +146,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    // Проверка бронирования
     private void validDateForBookingNewDto(BookingNewDto bookingNewDto) {
         if (bookingNewDto.getStart() == null) {
             throw new BadRequestException("Дата начала бронирования должны быть указано.");

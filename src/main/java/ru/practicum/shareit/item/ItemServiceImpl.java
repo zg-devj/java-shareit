@@ -35,6 +35,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
 
+    // Сохранение вещи
     @Override
     @Transactional
     public ItemDto saveItem(Long userId, ItemDto itemDto) {
@@ -48,6 +49,7 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.itemToDto(saved);
     }
 
+    // Обновление вещи
     @Override
     @Transactional
     public ItemDto updateItem(Long userId, ItemDto itemDto) {
@@ -78,6 +80,7 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.itemToDto(itemRepository.save(updated));
     }
 
+    // Получение последнего бронирования для вещи
     private BookingShort getLastBooking(Long itemId, Long userId) {
         PageRequest page = PageRequest.of(0, 1);
         LocalDateTime now = LocalDateTime.now();
@@ -89,6 +92,7 @@ public class ItemServiceImpl implements ItemService {
         return null;
     }
 
+    // Получение следующего бронирования для вещи
     private BookingShort getNextBooking(Long itemId, Long userId) {
         PageRequest page = PageRequest.of(0, 1);
         LocalDateTime now = LocalDateTime.now();
@@ -100,6 +104,7 @@ public class ItemServiceImpl implements ItemService {
         return null;
     }
 
+    // Вернуть вещи с комментариями
     @Override
     public ItemBookingDto findById(Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId)
@@ -112,6 +117,7 @@ public class ItemServiceImpl implements ItemService {
                 comments);
     }
 
+    // Вернуть вещи владельца с сомментариями
     @Override
     public List<ItemBookingDto> findAllByUserId(Long userId) {
         List<ItemBookingDto> returned = new ArrayList<>();
@@ -126,6 +132,7 @@ public class ItemServiceImpl implements ItemService {
         return returned;
     }
 
+    // Поиск по названия или описанию
     @Override
     public List<ItemDto> search(String search) {
         if (search != null && search.isBlank()) {
@@ -135,6 +142,8 @@ public class ItemServiceImpl implements ItemService {
                 itemRepository.search(search));
     }
 
+    // Добавить комментарий для бронирования
+    // если пользователь брал в пользование вещью
     @Override
     @Transactional
     public CommentDto addComment(Long userId, Long itemId, CommentNewDto comment) {
