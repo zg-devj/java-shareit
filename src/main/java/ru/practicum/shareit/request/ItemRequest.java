@@ -20,12 +20,14 @@ public class ItemRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requestor_id", nullable = false)
     private User requestor;
-    private LocalDateTime created;
+
+    private LocalDateTime created = LocalDateTime.now();
 
     @Override
     public boolean equals(Object o) {

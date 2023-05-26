@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentNewDto;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
@@ -12,6 +11,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.Valid;
 import java.util.List;
+
+import static ru.practicum.shareit.utils.CheckUtil.userIsNull;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -79,11 +80,5 @@ public class ItemController {
             @RequestParam String text
     ) {
         return itemService.search(text);
-    }
-
-    private void userIsNull(Long userId) {
-        if (userId == null) {
-            throw new BadRequestException("Не известен пользователь.");
-        }
     }
 }

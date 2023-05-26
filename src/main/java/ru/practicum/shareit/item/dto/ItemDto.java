@@ -19,7 +19,7 @@ public class ItemDto {
     private String name;
 
     @NotBlank(message = "Описание не может быть пустым или отсутствовать.")
-    @Size(max = 200, message = "Описание не должна быть больше 200 символов.")
+    @Size(max = 255, message = "Описание не должна быть больше 255 символов.")
     private String description;
 
     @NotNull(message = "Одобрение должно быть указано.")
