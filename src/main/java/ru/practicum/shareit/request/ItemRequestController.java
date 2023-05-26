@@ -8,7 +8,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import javax.validation.Valid;
 
-import static ru.practicum.shareit.utils.CheckUtil.userIsNull;
+import static ru.practicum.shareit.utils.Utils.userIsNull;
 
 @Slf4j
 @RestController
@@ -26,6 +26,7 @@ public class ItemRequestController {
     ) {
         userIsNull(userId);
         log.info("POST /requests - добавление запроса на вещь пользователем {}", userId);
-        return service.saveItemRequest(userId, requestDto);
+        ItemRequestDto saved = service.saveItemRequest(userId, requestDto);
+        return saved;
     }
 }

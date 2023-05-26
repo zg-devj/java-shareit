@@ -1,14 +1,15 @@
 package ru.practicum.shareit.request.dto;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ItemRequestDto {
 
     private Long id;
@@ -17,5 +18,5 @@ public class ItemRequestDto {
     @Size(max = 255)
     private String description;
 
-    private LocalDateTime created;
+    private String created;
 }

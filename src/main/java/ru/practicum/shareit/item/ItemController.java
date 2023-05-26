@@ -12,7 +12,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import javax.validation.Valid;
 import java.util.List;
 
-import static ru.practicum.shareit.utils.CheckUtil.userIsNull;
+import static ru.practicum.shareit.utils.Utils.userIsNull;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -39,8 +39,7 @@ public class ItemController {
     ) {
         userIsNull(userId);
         log.info("POST /items - добавление вещи пользователем {}", userId);
-        ItemDto created = itemService.saveItem(userId, itemDto);
-        return created;
+        return itemService.saveItem(userId, itemDto);
     }
 
     @PatchMapping("/{id}")

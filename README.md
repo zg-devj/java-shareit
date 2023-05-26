@@ -14,3 +14,7 @@
 ### Стек
 Java 11, JPA, SpringBook, Maven, Lombok, PostgreSQL
 
+### TODO
+2023-5-26
+
+[ ] - везде изменит вывод времени в DTO в виде String 

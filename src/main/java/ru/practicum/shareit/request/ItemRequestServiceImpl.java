@@ -21,9 +21,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public ItemRequestDto saveItemRequest(Long userId, ItemRequestDto requestDto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(
-                        String.format("Пользователь c id=%d не найдена", userId)));
-        ItemRequest saved = repository.save(ItemRequestMapper.dtoToItemRequest(user, requestDto));
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id=%d не найдена.", userId)));
+        ItemRequest itemRequest = ItemRequestMapper.dtoToItemRequest(user, requestDto);
+        ItemRequest saved = repository.save(itemRequest);
         return ItemRequestMapper.itemRequestToDto(saved);
     }
 }
