@@ -7,6 +7,7 @@ import ru.practicum.shareit.item.dto.CommentNewDto;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,7 @@ public class CommentMapper {
         return CommentDto.builder()
                 .id(comment.getId())
                 .authorName(comment.getAuthor().getName())
-                .created(comment.getCreated())
+                .created(comment.getCreated().toString())
                 .text(comment.getText())
                 .build();
     }
