@@ -4,11 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.*;
 
 @Data
 @Builder
@@ -23,11 +24,15 @@ public class ItemRequest {
 
     private String description;
 
+    private LocalDateTime created = LocalDateTime.now();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requestor_id", nullable = false)
     private User requestor;
 
-    private LocalDateTime created = LocalDateTime.now();
+    @OneToMany(fetch = FetchType.LAZY,orphanRemoval = true)
+    @JoinColumn(name = "request_id")
+    private List<Item> items = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

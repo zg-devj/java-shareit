@@ -14,6 +14,7 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -61,6 +62,7 @@ class ItemRequestServiceImplTest {
     void saveItemRequest_Normal() {
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(requestor));
         Mockito.when(itemRequestRepository.save(any(ItemRequest.class))).thenReturn(savedItemRequest);
+
         ItemRequestDto mustBe = ItemRequestMapper.itemRequestToDto(savedItemRequest);
 
         ItemRequestDto saved = service.saveItemRequest(1L, requestDto);
@@ -82,6 +84,37 @@ class ItemRequestServiceImplTest {
         Mockito.when(userRepository.findById(99L)).thenThrow(new NotFoundException(message));
 
         Throwable throwable = Assertions.catchException(() -> service.saveItemRequest(99L, requestDto));
+
+        Assertions.assertThat(throwable)
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(message);
+    }
+
+    @Test
+    void findAllByRequestor_Normal() {
+
+        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(requestor));
+        Mockito.when(itemRequestRepository.findAllByRequestorId(1L)).thenReturn(List.of(savedItemRequest));
+
+        List<ItemRequestDto> returned = service.findAllByRequestor(1L);
+
+        Assertions.assertThat(returned)
+                .isNotNull()
+                .hasSize(1);
+        Assertions.assertThat(returned.get(0).getDescription()).isEqualTo(requestDto.getDescription());
+
+        Mockito.verify(userRepository, Mockito.times(1)).findById(1L);
+        Mockito.verify(itemRequestRepository, Mockito.times(1)).findAllByRequestorId(1L);
+        Mockito.verifyNoMoreInteractions(userRepository, itemRequestRepository);
+    }
+
+    @Test
+    void findAllByRequestor_WrongUser_ReturnCode404() {
+        String message = String.format("Пользователь c id=%d не найдена.", 99L);
+
+        Mockito.when(userRepository.findById(99L)).thenThrow(new NotFoundException(message));
+
+        Throwable throwable = Assertions.catchException(() -> service.findAllByRequestor(99L));
 
         Assertions.assertThat(throwable)
                 .isInstanceOf(NotFoundException.class)

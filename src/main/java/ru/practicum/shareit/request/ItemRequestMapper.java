@@ -2,12 +2,16 @@ package ru.practicum.shareit.request;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.utils.Utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemRequestMapper {
@@ -24,6 +28,13 @@ public class ItemRequestMapper {
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
                 .created(itemRequest.getCreated().format(Utils.dtFormatter))
+                .items(ItemMapper.itemToDto(itemRequest.getItems()))
                 .build();
+    }
+
+    public static List<ItemRequestDto> itemRequestToDto(List<ItemRequest> requestList) {
+        return requestList.stream()
+                .map(ItemRequestMapper::itemRequestToDto)
+                .collect(Collectors.toList());
     }
 }

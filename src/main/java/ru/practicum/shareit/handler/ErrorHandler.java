@@ -44,11 +44,11 @@ public class ErrorHandler {
     }
 
     //500
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorMessage handlerException(final RuntimeException e) {
-        String msg = "Произошла непредвиденная ошибка.";
-        log.warn(msg);
-        return new ErrorMessage(msg);
-    }
+//    @ExceptionHandler
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public ErrorMessage handlerException(final RuntimeException e) {
+//        String msg = "Произошла непредвиденная ошибка.";
+//        log.warn(msg);
+//        return new ErrorMessage(msg);
+//    }
 }

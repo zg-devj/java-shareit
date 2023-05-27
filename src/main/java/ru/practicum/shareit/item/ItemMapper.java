@@ -12,12 +12,19 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemMapper {
     public static ItemDto itemToDto(Item item) {
-        return ItemDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.getAvailable())
-                .build();
+//        return ItemDto.builder()
+//                .id(item.getId())
+//                .name(item.getName())
+//                .description(item.getDescription())
+//                .available(item.getAvailable())
+//                .build();
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(item.getId());
+        itemDto.setName(item.getName());
+        itemDto.setDescription(item.getDescription());
+        itemDto.setAvailable(item.getAvailable());
+        itemDto.setRequestId(item.getRequest() != null ? item.getRequest().getId() : null);
+        return itemDto;
     }
 
     public static ItemBookingDto toItemBookingDto(

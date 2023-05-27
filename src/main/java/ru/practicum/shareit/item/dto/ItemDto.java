@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
@@ -9,7 +10,9 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Getter
-@Builder(toBuilder = true)
+@Setter
+//@Builder(toBuilder = true)
+@NoArgsConstructor
 public class ItemDto {
     @Setter
     private Long id;
@@ -24,4 +27,7 @@ public class ItemDto {
 
     @NotNull(message = "Одобрение должно быть указано.")
     private Boolean available;
+
+    private Long requestId;
+
 }
