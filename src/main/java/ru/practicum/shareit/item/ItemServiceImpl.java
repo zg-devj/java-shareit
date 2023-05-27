@@ -159,12 +159,7 @@ public class ItemServiceImpl implements ItemService {
         Booking booking = page.get().findFirst().orElseThrow(
                 () -> new BadRequestException("Не верный запрос на комментарий"));
 
-        Comment commentNew = Comment.builder()
-                .author(booking.getBooker())
-                .text(comment.getText())
-                .item(booking.getItem())
-                .created(LocalDateTime.now())
-                .build();
+        Comment commentNew = CommentMapper.dtoToComment(booking.getBooker(), booking.getItem(), comment);
         Comment saved = commentRepository.save(commentNew);
         return CommentMapper.commentToDto(saved);
     }
