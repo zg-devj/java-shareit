@@ -95,7 +95,7 @@ class ItemRequestServiceImplTest {
     @Test
     void findAllByRequestor_Normal() {
 
-        Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(requestor));
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
         Mockito.when(itemRequestRepository.findAllByRequestorId(1L)).thenReturn(List.of(savedItemRequest));
 
         List<ItemRequestDto> returned = service.findAllByRequestor(1L);
@@ -105,7 +105,7 @@ class ItemRequestServiceImplTest {
                 .hasSize(1);
         Assertions.assertThat(returned.get(0).getDescription()).isEqualTo(requestDto.getDescription());
 
-        Mockito.verify(userRepository, Mockito.times(1)).findById(1L);
+        Mockito.verify(userRepository, Mockito.times(1)).existsById(1L);
         Mockito.verify(itemRequestRepository, Mockito.times(1)).findAllByRequestorId(1L);
         Mockito.verifyNoMoreInteractions(userRepository, itemRequestRepository);
     }
@@ -114,7 +114,7 @@ class ItemRequestServiceImplTest {
     void findAllByRequestor_WrongUser_ReturnCode404() {
         String message = String.format("Пользователь c id=%d не найдена.", 99L);
 
-        Mockito.when(userRepository.findById(99L)).thenThrow(new NotFoundException(message));
+        Mockito.when(userRepository.existsById(99L)).thenThrow(new NotFoundException(message));
 
         Throwable throwable = Assertions.catchException(() -> service.findAllByRequestor(99L));
 
