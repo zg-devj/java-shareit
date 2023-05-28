@@ -19,8 +19,6 @@ public class ItemRequestMapper {
                 .requestor(user)
                 .description(requestDto.getDescription())
                 .created(LocalDateTime.now())
-                // TODO: 27.05.2023 delete
-                //.items(requestDto.getItems()!=null?requestDto.getItems():new ArrayList<>())
                 .build();
     }
 
@@ -29,8 +27,6 @@ public class ItemRequestMapper {
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
                 .created(itemRequest.getCreated().format(Utils.dtFormatter))
-                // TODO: 27.05.2023 LOOK
-                //.items(ItemMapper.itemToDto(itemRequest.getItems()))
                 .items(itemRequest.getItems() != null ? ItemMapper.itemToDto(itemRequest.getItems()) : new ArrayList<>())
                 .build();
     }

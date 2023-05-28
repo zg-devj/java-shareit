@@ -34,21 +34,33 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     // Получаем все запросы на вещи по пользователю
     @Override
     public List<ItemRequestDto> findAllByRequestor(long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id=%d не найдена.", userId)));
+        if(!userRepository.existsById(userId)) {
+            throw new NotFoundException(String.format("Пользователь c id=%d не найдена.", userId));
+        }
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorId(userId);
         List<ItemRequestDto> retunedList = ItemRequestMapper.itemRequestToDto(itemRequests);
         return retunedList;
     }
 
+    // Получаем все запросы на вещи за исключением запросов запрашивающего пользователя
     @Override
     public List<ItemRequestDto> findItemRequests(long userId, int from, int size) {
         int page = from / size;
-        // TODO: 28.05.2023 delete
-        System.out.println(page);
         PageRequest pageRequest = PageRequest.of(page, size);
-        List<ItemRequest> itemRequests = itemRequestRepository.findItemRequests(userId);
+        List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorIdNot(userId, pageRequest);
         List<ItemRequestDto> retunedList = ItemRequestMapper.itemRequestToDto(itemRequests);
         return retunedList;
+    }
+
+    // Получаем данные о запросе
+    @Override
+    public ItemRequestDto getItemRequest(long userId, long itemRequestId) {
+        if(!userRepository.existsById(userId)) {
+            throw new NotFoundException(String.format("Пользователь c id=%d не найдена.", userId));
+        }
+        ItemRequest itemRequest = itemRequestRepository.findById(itemRequestId)
+                .orElseThrow(() -> new NotFoundException(String.format("Запрос c id=%d не найдена.", itemRequestId)));
+        ItemRequestDto itemRequestDto = ItemRequestMapper.itemRequestToDto(itemRequest);
+        return itemRequestDto;
     }
 }

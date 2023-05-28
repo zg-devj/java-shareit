@@ -61,4 +61,15 @@ public class ItemRequestController {
         List<ItemRequestDto> itemRequestDtos = service.findItemRequests(userId, from, size);
         return itemRequestDtos;
     }
+
+    @GetMapping("/{id}")
+    public ItemRequestDto getItemRequest(
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @PathVariable Long id
+    ) {
+        log.info("GET /requests/{} - информация о запросе", id);
+        userIsNull(userId);
+        ItemRequestDto itemRequestDto = service.getItemRequest(userId, id);
+        return itemRequestDto;
+    }
 }
