@@ -25,4 +25,11 @@ public class Utils {
      */
     public static final DateTimeFormatter dtFormatter = DateTimeFormatter
             .ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+    public static void checkPaging(int from, int size) {
+        if ((from == 0 && size == 0) || (from < 0 && size > 0) ||
+                (from == 0 && size < 0)) {
+            throw new BadRequestException("Не верный запрос пейджинации.");
+        }
+    }
 }

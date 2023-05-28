@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -81,68 +82,73 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.bookingToDto(booking);
     }
 
-    // Вернуть все бронирования веши бронирующего
+    // Вернуть все бронирования вещи бронирующего
     @Override
-    public List<BookingDto> getAllBookings(Long userId, State state) {
+    public List<BookingDto> getAllBookings(Long userId, State state, int from, int size) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException(String.format("Пользователь c id=%d не найден.", userId));
         }
         LocalDateTime now = LocalDateTime.now();
+        int page = from / size;
+        PageRequest pageRequest = PageRequest.of(page, size);
         switch (state) {
             case WAITING:
                 return BookingMapper.bookingToDto(bookingRepository
                         .findAllByBookerIdAndStatusEqualsOrderByStartDesc(userId,
-                                BookingStatus.WAITING));
+                                BookingStatus.WAITING, pageRequest));
             case CURRENT:
                 return BookingMapper.bookingToDto(bookingRepository
                         .findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
-                                now, now));
+                                now, now, pageRequest));
             case REJECTED:
                 Set<BookingStatus> statusSet = EnumSet.of(BookingStatus.REJECTED,
                         BookingStatus.CANCELED);
                 return BookingMapper.bookingToDto(bookingRepository
-                        .findAllByBookerIdAndStatusInOrderByStartDesc(userId, statusSet));
+                        .findAllByBookerIdAndStatusInOrderByStartDesc(userId, statusSet, pageRequest));
             case PAST:
                 return BookingMapper.bookingToDto(bookingRepository
-                        .findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, now));
+                        .findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, now, pageRequest));
             case FUTURE:
                 return BookingMapper.bookingToDto(bookingRepository
-                        .findAllByBookerIdAndStartAfterOrderByStartDesc(userId, now));
+                        .findAllByBookerIdAndStartAfterOrderByStartDesc(userId, now, pageRequest));
             case ALL:
             default:
-                return BookingMapper.bookingToDto(bookingRepository.findAllByBookerIdOrderByStartDesc(userId));
+                return BookingMapper.bookingToDto(bookingRepository
+                        .findAllByBookerIdOrderByStartDesc(userId, pageRequest));
         }
     }
 
-    // Вернуть все бронирования веши для владельца
+    // Вернуть все бронирования вещи для владельца
     @Override
-    public List<BookingDto> getAllBookingsForOwner(Long userId, State state) {
+    public List<BookingDto> getAllBookingsForOwner(Long userId, State state, int from, int size) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException(String.format("Пользователь c id=%d не найден.", userId));
         }
         LocalDateTime now = LocalDateTime.now();
+        int page = from / size;
+        PageRequest pageRequest = PageRequest.of(page, size);
         switch (state) {
             case WAITING:
                 return BookingMapper.bookingToDto(bookingRepository
-                        .findAllByItemOwnerIdAndStatusEqualsOrderByStartDesc(userId, BookingStatus.WAITING));
+                        .findAllByItemOwnerIdAndStatusEqualsOrderByStartDesc(userId, BookingStatus.WAITING, pageRequest));
             case CURRENT:
                 return BookingMapper.bookingToDto(bookingRepository
                         .findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
-                                now, now));
+                                now, now, pageRequest));
             case REJECTED:
                 Set<BookingStatus> statusSet = EnumSet.of(BookingStatus.REJECTED,
                         BookingStatus.CANCELED);
                 return BookingMapper.bookingToDto(bookingRepository
-                        .findAllByItemOwnerIdAndStatusInOrderByStartDesc(userId, statusSet));
+                        .findAllByItemOwnerIdAndStatusInOrderByStartDesc(userId, statusSet, pageRequest));
             case PAST:
                 return BookingMapper.bookingToDto(bookingRepository
-                        .findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(userId, now));
+                        .findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(userId, now, pageRequest));
             case FUTURE:
                 return BookingMapper.bookingToDto(bookingRepository
-                        .findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId, now));
+                        .findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId, now, pageRequest));
             case ALL:
             default:
-                return BookingMapper.bookingToDto(bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId));
+                return BookingMapper.bookingToDto(bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId, pageRequest));
         }
     }
 

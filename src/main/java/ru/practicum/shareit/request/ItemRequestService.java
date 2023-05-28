@@ -5,7 +5,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import java.util.List;
 
 public interface ItemRequestService {
-    ItemRequestDto saveItemRequest(Long userId, ItemRequestDto requestDto);
+    ItemRequestDto saveItemRequest(long userId, ItemRequestDto requestDto);
 
     List<ItemRequestDto> findAllByRequestor(long userId);
 

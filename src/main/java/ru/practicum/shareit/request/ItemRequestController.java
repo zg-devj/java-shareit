@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.utils.Utils;
 
 import javax.validation.Valid;
 
@@ -47,17 +48,11 @@ public class ItemRequestController {
     @GetMapping("/all")
     public List<ItemRequestDto> findAll(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestParam(required = false) Integer from,
-            @RequestParam(required = false) Integer size
+            @RequestParam(required = false, defaultValue = "0") int from,
+            @RequestParam(required = false, defaultValue = "20") int size
     ) {
         log.info("GET /requests/all - список запросов");
-        if (from == null || size == null) {
-            return new ArrayList<>();
-        }
-        if ((from == 0 && size == 0) || (from == -1 && size == 20) ||
-                (from == 0 && size == -1)) {
-            throw new BadRequestException("Не верный запрос");
-        }
+        Utils.checkPaging(from, size);
         List<ItemRequestDto> itemRequestDtos = service.findItemRequests(userId, from, size);
         return itemRequestDtos;
     }

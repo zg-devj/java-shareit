@@ -22,7 +22,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     // Сохраняем запрос на вещь
     @Transactional
     @Override
-    public ItemRequestDto saveItemRequest(Long userId, ItemRequestDto requestDto) {
+    public ItemRequestDto saveItemRequest(long userId, ItemRequestDto requestDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id=%d не найдена.", userId)));
         ItemRequest itemRequest = ItemRequestMapper.dtoToItemRequest(user, requestDto);
@@ -34,7 +34,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     // Получаем все запросы на вещи по пользователю
     @Override
     public List<ItemRequestDto> findAllByRequestor(long userId) {
-        if(!userRepository.existsById(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new NotFoundException(String.format("Пользователь c id=%d не найдена.", userId));
         }
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorId(userId);
@@ -47,7 +47,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestDto> findItemRequests(long userId, int from, int size) {
         int page = from / size;
         PageRequest pageRequest = PageRequest.of(page, size);
-        List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorIdNot(userId, pageRequest);
+        List<ItemRequest> itemRequests = itemRequestRepository
+                .findAllByRequestorIdNotOrderByCreatedDesc(userId, pageRequest);
         List<ItemRequestDto> retunedList = ItemRequestMapper.itemRequestToDto(itemRequests);
         return retunedList;
     }
@@ -55,7 +56,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     // Получаем данные о запросе
     @Override
     public ItemRequestDto getItemRequest(long userId, long itemRequestId) {
-        if(!userRepository.existsById(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new NotFoundException(String.format("Пользователь c id=%d не найдена.", userId));
         }
         ItemRequest itemRequest = itemRequestRepository.findById(itemRequestId)
