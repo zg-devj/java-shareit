@@ -15,7 +15,6 @@ import ru.practicum.shareit.utils.Utils;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,7 +36,7 @@ class ItemRequestControllerTest {
     @MockBean
     ItemRequestService itemRequestService;
 
-    private LocalDateTime now = LocalDateTime
+    private final LocalDateTime now = LocalDateTime
             .of(2023, 5, 26, 10, 0, 0, 0);
 
     ItemRequestDto requestDto;

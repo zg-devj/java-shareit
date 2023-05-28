@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
 
         // Получаем пользователя для обновления
         User updated = userRepository.findById(userDto.getId())
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id=%d не найден", userDto.getId())));
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id=%d не найден.", userDto.getId())));
 
         if (userDto.getEmail() != null) {
             log.info("Обновляется email пользователя c id={}.", updated.getId());
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto findUserById(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id=%d не найден", userId)));
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id=%d не найден.", userId)));
         log.info("Возращен пользовател с id={}.", user.getId());
         return UserMapper.userToDto(user);
     }

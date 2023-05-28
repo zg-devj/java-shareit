@@ -22,7 +22,7 @@ public class UserController {
     public UserDto create(
             @Valid @RequestBody UserDto userDto
     ) {
-        log.info("POST /users - создание пользователя");
+        log.info("POST /users - создание пользователя.");
         return userService.saveUser(userDto);
     }
 
@@ -31,7 +31,7 @@ public class UserController {
             @PathVariable Long id,
             @RequestBody UserDto userDto
     ) {
-        log.info("PATCH /users/{} - обновить пользователя", id);
+        log.info("PATCH /users/{} - обновить пользователя.", id);
         userDto.setId(id);
         return userService.updateUser(userDto);
     }
@@ -40,7 +40,7 @@ public class UserController {
     public UserDto findById(
             @PathVariable Long id
     ) {
-        log.info("GET /users/{} - получение пользователя", id);
+        log.info("GET /users/{} - получение пользователя.", id);
         return userService.findUserById(id);
     }
 
@@ -49,13 +49,13 @@ public class UserController {
     public void delete(
             @PathVariable Long id
     ) {
-        log.info("DELETE /users/{} - удалить пользователя", id);
+        log.info("DELETE /users/{} - удалить пользователя.", id);
         userService.deleteUser(id);
     }
 
     @GetMapping
     public List<UserDto> findAll() {
-        log.info("GET /users - вернуть всех пользователей пользователя");
+        log.info("GET /users - вернуть всех пользователей пользователя.");
         return userService.findAllUsers();
     }
 }

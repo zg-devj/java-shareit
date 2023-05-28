@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -26,6 +25,7 @@ public class BookingController {
             @RequestHeader(value = "X-Sharer-User-Id") Long userId,
             @RequestBody BookingNewDto bookingNewDto
     ) {
+        log.info("POST /bookings - создание бронирования пользователем {}.", userId);
         return bookingService.createBooking(userId, bookingNewDto);
     }
 
@@ -35,6 +35,7 @@ public class BookingController {
             @PathVariable Long bookingId,
             @RequestParam boolean approved
     ) {
+        log.info("PATCH /bookings/{} - разрешение/отмена бронирования.", bookingId);
         return bookingService.approve(userId, approved, bookingId);
     }
 
@@ -43,6 +44,7 @@ public class BookingController {
             @RequestHeader(value = "X-Sharer-User-Id") Long userId,
             @PathVariable Long bookingId
     ) {
+        log.info("GET /bookings/{} - запрос бронирования.", bookingId);
         return bookingService.getBooking(userId, bookingId);
     }
 
@@ -56,7 +58,7 @@ public class BookingController {
         State state1 = checkState(state);
         Utils.checkPaging(from, size);
 
-        log.info("GET /bookings - все бронирования");
+        log.info("GET /bookings - все бронирования.");
         return bookingService.getAllBookings(userId, state1, from, size);
     }
 
@@ -70,7 +72,7 @@ public class BookingController {
         State state1 = checkState(state);
         Utils.checkPaging(from, size);
 
-        log.info("GET /bookings/owner - все бронирования владельца");
+        log.info("GET /bookings/owner - все бронирования владельца.");
         return bookingService.getAllBookingsForOwner(userId, state1, from, size);
     }
 

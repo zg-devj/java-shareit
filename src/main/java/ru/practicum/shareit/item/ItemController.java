@@ -28,8 +28,8 @@ public class ItemController {
             @PathVariable Long itemId,
             @RequestBody CommentNewDto commentNewDto
     ) {
-        CommentDto result = itemService.addComment(userId, itemId, commentNewDto);
-        return result;
+        log.info("POST /items/{}/comment - добавление комментария пользователем {}", itemId, userId);
+        return itemService.addComment(userId, itemId, commentNewDto);
     }
 
     @PostMapping

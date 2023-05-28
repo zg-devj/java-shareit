@@ -44,19 +44,19 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto saveItem(Long userId, ItemDto itemDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(
-                        String.format("Пользователь c id=%d не найдена", userId)));
+                        String.format("Пользователь c id=%d не найдена.", userId)));
 
         Item item = ItemMapper.dtoToItem(itemDto);
         if (itemDto.getRequestId() != null) {
             ItemRequest itemRequest = itemRequestRepository.findById(itemDto.getRequestId())
                     .orElseThrow(() -> new NotFoundException(
-                            String.format("Запрос вещи c id=%d не найдена", itemDto.getRequestId())));
+                            String.format("Запрос вещи c id=%d не найдена.", itemDto.getRequestId())));
             item.setRequest(itemRequest);
         }
         item.setOwner(user);
 
         Item saved = itemRepository.save(item);
-        log.info("Пользователь id={} добавил вещь с id={}", userId, saved.getId());
+        log.info("Пользователь id={} добавил вещь с id={}.", userId, saved.getId());
         return ItemMapper.itemToDto(saved);
     }
 
@@ -67,7 +67,7 @@ public class ItemServiceImpl implements ItemService {
 
         Item updated = itemRepository.findById(itemDto.getId())
                 .orElseThrow(() -> new NotFoundException(
-                        String.format("Вещь c id=%d не найдена", itemDto.getId())));
+                        String.format("Вещь c id=%d не найдена.", itemDto.getId())));
 
         User user = updated.getOwner();
 
@@ -87,7 +87,7 @@ public class ItemServiceImpl implements ItemService {
             log.info("Обновляется статус одобрения вещи с id={}.", updated.getId());
             updated.setAvailable(itemDto.getAvailable());
         }
-        log.info("Пользователь id={} обновил вещь с id={}", userId, updated.getId());
+        log.info("Пользователь id={} обновил вещь с id={}.", userId, updated.getId());
         return ItemMapper.itemToDto(itemRepository.save(updated));
     }
 
@@ -120,7 +120,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemBookingDto findById(Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException(
-                        String.format("Вещь c id=%d не найдена", itemId)));
+                        String.format("Вещь c id=%d не найдена.", itemId)));
         List<Comment> comments = commentRepository.findCommentsByItemIdOrderByCreatedAsc(item.getId());
         return ItemMapper.toItemBookingDto(item,
                 getLastBooking(item.getId(), userId),
@@ -172,7 +172,7 @@ public class ItemServiceImpl implements ItemService {
                         now, BookingStatus.APPROVED, pageRequest);
 
         Booking booking = page.get().findFirst().orElseThrow(
-                () -> new BadRequestException("Не верный запрос на комментарий"));
+                () -> new BadRequestException("Не верный запрос на комментарий."));
 
         Comment commentNew = CommentMapper.dtoToComment(booking.getBooker(), booking.getItem(), comment);
         Comment saved = commentRepository.save(commentNew);

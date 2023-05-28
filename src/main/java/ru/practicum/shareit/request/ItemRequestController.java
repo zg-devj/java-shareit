@@ -28,8 +28,7 @@ public class ItemRequestController {
     ) {
         log.info("POST /requests - добавление запроса на вещь пользователем {}", userId);
         userIsNull(userId);
-        ItemRequestDto saved = service.saveItemRequest(userId, requestDto);
-        return saved;
+        return service.saveItemRequest(userId, requestDto);
     }
 
     @GetMapping
@@ -38,8 +37,7 @@ public class ItemRequestController {
     ) {
         log.info("GET /requests - список запросов вещей пользователя {}", userId);
         userIsNull(userId);
-        List<ItemRequestDto> itemRequestDtos = service.findAllByRequestor(userId);
-        return itemRequestDtos;
+        return service.findAllByRequestor(userId);
     }
 
     @GetMapping("/all")
@@ -50,8 +48,7 @@ public class ItemRequestController {
     ) {
         log.info("GET /requests/all - список запросов");
         Utils.checkPaging(from, size);
-        List<ItemRequestDto> itemRequestDtos = service.findItemRequests(userId, from, size);
-        return itemRequestDtos;
+        return service.findItemRequests(userId, from, size);
     }
 
     @GetMapping("/{id}")
@@ -61,7 +58,6 @@ public class ItemRequestController {
     ) {
         log.info("GET /requests/{} - информация о запросе", id);
         userIsNull(userId);
-        ItemRequestDto itemRequestDto = service.getItemRequest(userId, id);
-        return itemRequestDto;
+        return service.getItemRequest(userId, id);
     }
 }

@@ -27,8 +27,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id=%d не найдена.", userId)));
         ItemRequest itemRequest = ItemRequestMapper.dtoToItemRequest(user, requestDto);
         ItemRequest saved = itemRequestRepository.save(itemRequest);
-        ItemRequestDto retuned = ItemRequestMapper.itemRequestToDto(saved);
-        return retuned;
+        return ItemRequestMapper.itemRequestToDto(saved);
     }
 
     // Получаем все запросы на вещи по пользователю
@@ -38,8 +37,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             throw new NotFoundException(String.format("Пользователь c id=%d не найдена.", userId));
         }
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorId(userId);
-        List<ItemRequestDto> retunedList = ItemRequestMapper.itemRequestToDto(itemRequests);
-        return retunedList;
+        return ItemRequestMapper.itemRequestToDto(itemRequests);
     }
 
     // Получаем все запросы на вещи за исключением запросов запрашивающего пользователя
@@ -49,8 +47,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         PageRequest pageRequest = PageRequest.of(page, size);
         List<ItemRequest> itemRequests = itemRequestRepository
                 .findAllByRequestorIdNotOrderByCreatedDesc(userId, pageRequest);
-        List<ItemRequestDto> retunedList = ItemRequestMapper.itemRequestToDto(itemRequests);
-        return retunedList;
+        return ItemRequestMapper.itemRequestToDto(itemRequests);
     }
 
     // Получаем данные о запросе
@@ -61,7 +58,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         }
         ItemRequest itemRequest = itemRequestRepository.findById(itemRequestId)
                 .orElseThrow(() -> new NotFoundException(String.format("Запрос c id=%d не найдена.", itemRequestId)));
-        ItemRequestDto itemRequestDto = ItemRequestMapper.itemRequestToDto(itemRequest);
-        return itemRequestDto;
+        return ItemRequestMapper.itemRequestToDto(itemRequest);
     }
 }

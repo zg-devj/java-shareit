@@ -194,7 +194,7 @@ class UserServiceTest {
 
         Assertions.assertThat(thrown)
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage(String.format("Пользователь c id=%d не найден", 999L));
+                .hasMessage(String.format("Пользователь c id=%d не найден.", 999L));
 
         Mockito.verify(userRepository, Mockito.times(1)).findById(999L);
         Mockito.verifyNoMoreInteractions(userRepository);
