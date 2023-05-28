@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import javax.validation.Valid;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static ru.practicum.shareit.utils.Utils.userIsNull;
@@ -44,10 +46,18 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestDto> findAll(
-            @RequestParam(defaultValue = "0") int from,
-            @RequestParam(defaultValue = "0") int size
+            @RequestParam(required = false) Integer from,
+            @RequestParam(required = false) Integer size
     ) {
         log.info("GET /requests/all - список запросов");
-        return null;
+        if (from == null || size == null) {
+            return new ArrayList<>();
+        }
+        if ((from == 0 && size == 0) || (from == -1 && size == 20) ||
+                (from == 0 && size == -1)) {
+            throw new BadRequestException("Не верный запрос");
+        }
+        List<ItemRequestDto> itemRequestDtos = service.findItemRequests(from, size);
+        return itemRequestDtos;
     }
 }

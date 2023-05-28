@@ -30,8 +30,7 @@ public class ItemRequest {
     @JoinColumn(name = "requestor_id", nullable = false)
     private User requestor;
 
-    @OneToMany(fetch = FetchType.LAZY,orphanRemoval = true)
-    @JoinColumn(name = "request_id")
+    @OneToMany(mappedBy = "request")
     private List<Item> items = new ArrayList<>();
 
     @Override

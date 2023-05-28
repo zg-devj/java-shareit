@@ -10,6 +10,5 @@ public interface ItemRequestService {
 
     List<ItemRequestDto> findAllByRequestor(Long userId);
 
-//    @Query("")
-//    List<ItemRequestDto> findItemRequests();
+    List<ItemRequestDto> findItemRequests(int from, int size);
 }

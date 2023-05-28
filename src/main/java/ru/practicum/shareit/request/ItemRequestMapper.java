@@ -8,8 +8,7 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.utils.Utils;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +19,8 @@ public class ItemRequestMapper {
                 .requestor(user)
                 .description(requestDto.getDescription())
                 .created(LocalDateTime.now())
+                // TODO: 27.05.2023 delete
+                //.items(requestDto.getItems()!=null?requestDto.getItems():new ArrayList<>())
                 .build();
     }
 
@@ -28,7 +29,9 @@ public class ItemRequestMapper {
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
                 .created(itemRequest.getCreated().format(Utils.dtFormatter))
-                .items(ItemMapper.itemToDto(itemRequest.getItems()))
+                // TODO: 27.05.2023 LOOK
+                //.items(ItemMapper.itemToDto(itemRequest.getItems()))
+                .items(itemRequest.getItems() != null ? ItemMapper.itemToDto(itemRequest.getItems()) : new ArrayList<>())
                 .build();
     }
 
