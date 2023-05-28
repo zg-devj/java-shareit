@@ -1,6 +1,5 @@
 package ru.practicum.shareit.request;
 
-import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import java.util.List;
@@ -8,7 +7,7 @@ import java.util.List;
 public interface ItemRequestService {
     ItemRequestDto saveItemRequest(Long userId, ItemRequestDto requestDto);
 
-    List<ItemRequestDto> findAllByRequestor(Long userId);
+    List<ItemRequestDto> findAllByRequestor(long userId);
 
-    List<ItemRequestDto> findItemRequests(int from, int size);
+    List<ItemRequestDto> findItemRequests(long userId, int from, int size);
 }

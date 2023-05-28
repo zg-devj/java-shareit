@@ -46,6 +46,7 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestDto> findAll(
+            @RequestHeader("X-Sharer-User-Id") Long userId,
             @RequestParam(required = false) Integer from,
             @RequestParam(required = false) Integer size
     ) {
@@ -57,7 +58,7 @@ public class ItemRequestController {
                 (from == 0 && size == -1)) {
             throw new BadRequestException("Не верный запрос");
         }
-        List<ItemRequestDto> itemRequestDtos = service.findItemRequests(from, size);
+        List<ItemRequestDto> itemRequestDtos = service.findItemRequests(userId, from, size);
         return itemRequestDtos;
     }
 }

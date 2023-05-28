@@ -9,6 +9,7 @@ public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> 
 
     List<ItemRequest> findAllByRequestorId(long requestorId);
 
-    @Query("select ri from ItemRequest as ri")
-    List<ItemRequest> findItemRequests();
+    @Query("select ri from ItemRequest as ri " +
+            "where ri.requestor.id!=?1")
+    List<ItemRequest> findItemRequests(long requestorId);
 }

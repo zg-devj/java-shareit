@@ -19,7 +19,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository itemRequestRepository;
     private final UserRepository userRepository;
 
-    // сохраняем запрос на вещь
+    // Сохраняем запрос на вещь
     @Transactional
     @Override
     public ItemRequestDto saveItemRequest(Long userId, ItemRequestDto requestDto) {
@@ -31,8 +31,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return retuned;
     }
 
+    // Получаем все запросы на вещи по пользователю
     @Override
-    public List<ItemRequestDto> findAllByRequestor(Long userId) {
+    public List<ItemRequestDto> findAllByRequestor(long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id=%d не найдена.", userId)));
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorId(userId);
@@ -41,11 +42,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequestDto> findItemRequests(int from, int size) {
+    public List<ItemRequestDto> findItemRequests(long userId, int from, int size) {
         int page = from / size;
+        // TODO: 28.05.2023 delete
         System.out.println(page);
         PageRequest pageRequest = PageRequest.of(page, size);
-        List<ItemRequest> itemRequests = itemRequestRepository.findItemRequests();
+        List<ItemRequest> itemRequests = itemRequestRepository.findItemRequests(userId);
         List<ItemRequestDto> retunedList = ItemRequestMapper.itemRequestToDto(itemRequests);
         return retunedList;
     }
