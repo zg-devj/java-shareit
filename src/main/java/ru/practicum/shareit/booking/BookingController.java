@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -49,8 +50,8 @@ public class BookingController {
     public List<BookingDto> getAll(
             @RequestHeader(value = "X-Sharer-User-Id") Long userId,
             @RequestParam(defaultValue = "ALL") String state,
-            @RequestParam(required = false, defaultValue = "0") int from,
-            @RequestParam(required = false, defaultValue = "20") int size
+            @RequestParam(defaultValue = "0") int from,
+            @RequestParam(defaultValue = "20") int size
     ) {
         State state1 = checkState(state);
         Utils.checkPaging(from, size);
@@ -63,8 +64,8 @@ public class BookingController {
     public List<BookingDto> getOwnerAll(
             @RequestHeader(value = "X-Sharer-User-Id") Long userId,
             @RequestParam(defaultValue = "ALL") String state,
-            @RequestParam(required = false, defaultValue = "0") int from,
-            @RequestParam(required = false, defaultValue = "20") int size
+            @RequestParam(defaultValue = "0") int from,
+            @RequestParam(defaultValue = "20") int size
     ) {
         State state1 = checkState(state);
         Utils.checkPaging(from, size);

@@ -8,6 +8,7 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentNewDto;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.utils.Utils;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -66,18 +67,24 @@ public class ItemController {
 
     @GetMapping
     public List<ItemBookingDto> findAllByUserId(
-            @RequestHeader(value = "X-Sharer-User-Id") Long userId
+            @RequestHeader(value = "X-Sharer-User-Id") Long userId,
+            @RequestParam(defaultValue = "0") int from,
+            @RequestParam(defaultValue = "20") int size
     ) {
         userIsNull(userId);
+        Utils.checkPaging(from, size);
         log.info("GET /items - просмотр вещей пользователем с id={}", userId);
-        return itemService.findAllByUserId(userId);
+        return itemService.findAllByUserId(userId, from, size);
     }
 
 
     @GetMapping("/search")
     public List<ItemDto> search(
-            @RequestParam String text
+            @RequestParam String text,
+            @RequestParam(defaultValue = "0") int from,
+            @RequestParam(defaultValue = "20") int size
     ) {
-        return itemService.search(text);
+        Utils.checkPaging(from, size);
+        return itemService.search(text, from, size);
     }
 }

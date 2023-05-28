@@ -130,9 +130,11 @@ public class ItemServiceImpl implements ItemService {
 
     // Вернуть вещи владельца с сомментариями
     @Override
-    public List<ItemBookingDto> findAllByUserId(Long userId) {
+    public List<ItemBookingDto> findAllByUserId(Long userId, int from, int size) {
+        int page = from / size;
+        PageRequest pageRequest = PageRequest.of(page, size);
         List<ItemBookingDto> returned = new ArrayList<>();
-        List<Item> items = itemRepository.findAllByOwnerIdOrderByIdAsc(userId);
+        List<Item> items = itemRepository.findAllByOwnerIdOrderByIdAsc(userId, pageRequest);
         for (Item item : items) {
             List<Comment> comments = commentRepository.findCommentsByItemIdOrderByCreatedAsc(item.getId());
             returned.add(ItemMapper.toItemBookingDto(item,
@@ -145,12 +147,14 @@ public class ItemServiceImpl implements ItemService {
 
     // Поиск по названия или описанию
     @Override
-    public List<ItemDto> search(String search) {
+    public List<ItemDto> search(String search, int from, int size) {
         if (search != null && search.isBlank()) {
             return new ArrayList<>();
         }
+        int page = from / size;
+        PageRequest pageRequest = PageRequest.of(page, size);
         return ItemMapper.itemToDto(
-                itemRepository.search(search));
+                itemRepository.search(search, pageRequest));
     }
 
     // Добавить комментарий для бронирования

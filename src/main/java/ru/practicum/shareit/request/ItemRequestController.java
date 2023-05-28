@@ -4,13 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.utils.Utils;
 
 import javax.validation.Valid;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import static ru.practicum.shareit.utils.Utils.userIsNull;
@@ -48,8 +45,8 @@ public class ItemRequestController {
     @GetMapping("/all")
     public List<ItemRequestDto> findAll(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestParam(required = false, defaultValue = "0") int from,
-            @RequestParam(required = false, defaultValue = "20") int size
+            @RequestParam(defaultValue = "0") int from,
+            @RequestParam(defaultValue = "20") int size
     ) {
         log.info("GET /requests/all - список запросов");
         Utils.checkPaging(from, size);
