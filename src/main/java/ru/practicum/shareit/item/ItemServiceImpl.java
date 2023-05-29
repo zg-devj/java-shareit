@@ -43,8 +43,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public ItemDto saveItem(Long userId, ItemDto itemDto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(
-                        String.format("Пользователь c id=%d не найдена.", userId)));
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id=%d не найдена.", userId)));
 
         Item item = ItemMapper.dtoToItem(itemDto);
         if (itemDto.getRequestId() != null) {
@@ -66,8 +65,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto updateItem(Long userId, ItemDto itemDto) {
 
         Item updated = itemRepository.findById(itemDto.getId())
-                .orElseThrow(() -> new NotFoundException(
-                        String.format("Вещь c id=%d не найдена.", itemDto.getId())));
+                .orElseThrow(() -> new NotFoundException(String.format("Вещь c id=%d не найдена.", itemDto.getId())));
 
         User user = updated.getOwner();
 
@@ -172,7 +170,7 @@ public class ItemServiceImpl implements ItemService {
                         now, BookingStatus.APPROVED, pageRequest);
 
         Booking booking = page.get().findFirst().orElseThrow(
-                () -> new BadRequestException("Не верный запрос на комментарий."));
+                () -> new BadRequestException("Вы не можете оставить комментарий к бронированию."));
 
         Comment commentNew = CommentMapper.dtoToComment(booking.getBooker(), booking.getItem(), comment);
         Comment saved = commentRepository.save(commentNew);

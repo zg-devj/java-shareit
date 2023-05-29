@@ -14,7 +14,7 @@ class UserRepositoryTest {
     private final TestEntityManager tem;
 
     @Test
-    void test() {
+    void test_canUpdate() {
         User user1 = User.builder()
                 .name("user")
                 .email("user@example.com")
