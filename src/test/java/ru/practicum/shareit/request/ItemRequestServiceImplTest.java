@@ -8,6 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.User;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 
 @ExtendWith(MockitoExtension.class)
 class ItemRequestServiceImplTest {
@@ -28,6 +31,9 @@ class ItemRequestServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private Pageable pageableMock;
 
     @InjectMocks
     private ItemRequestServiceImpl service;
@@ -114,12 +120,86 @@ class ItemRequestServiceImplTest {
     void findAllByRequestor_WrongUser_ReturnCode404() {
         String message = String.format("Пользователь c id=%d не найдена.", 99L);
 
-        Mockito.when(userRepository.existsById(99L)).thenThrow(new NotFoundException(message));
+        Mockito.when(userRepository.existsById(99L)).thenReturn(false);
 
         Throwable throwable = Assertions.catchException(() -> service.findAllByRequestor(99L));
 
         Assertions.assertThat(throwable)
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage(message);
+
+        Mockito.verify(userRepository, Mockito.times(1)).existsById(99L);
+        Mockito.verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    void findItemRequests_Normal() {
+        PageRequest pageRequest = PageRequest.of(0, 20);
+        Mockito.when(itemRequestRepository.findAllByRequestorIdNotOrderByCreatedDesc(1L, pageRequest))
+                .thenReturn(List.of(savedItemRequest));
+
+        List<ItemRequestDto> retuned = service.findItemRequests(1L, 0, 20);
+
+        Assertions.assertThat(retuned)
+                .isNotNull()
+                .hasSize(1);
+
+        Mockito.verify(itemRequestRepository, Mockito.times(1))
+                .findAllByRequestorIdNotOrderByCreatedDesc(1L, pageRequest);
+        Mockito.verifyNoMoreInteractions(itemRequestRepository);
+    }
+
+    @Test
+    void getItemRequest_Normal() {
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(itemRequestRepository.findById(1L))
+                .thenReturn(Optional.of(savedItemRequest));
+
+        ItemRequestDto mustBe = ItemRequestMapper.itemRequestToDto(savedItemRequest);
+
+        ItemRequestDto returned = service.getItemRequest(1L, 1L);
+
+        Assertions.assertThat(returned)
+                .isNotNull()
+                .usingRecursiveComparison().isEqualTo(mustBe);
+
+        Mockito.verify(userRepository, Mockito.times(1)).existsById(1L);
+        Mockito.verify(itemRequestRepository, Mockito.times(1)).findById(1L);
+        Mockito.verifyNoMoreInteractions(userRepository, itemRequestRepository);
+    }
+
+    @Test
+    void getItemRequest_WrongUserId_ReturnCode404() {
+        String message = String.format("Пользователь c id=%d не найдена.", 99L);
+
+        Mockito.when(userRepository.existsById(99L)).thenReturn(false);
+
+        Throwable throwable = Assertions.catchException(() -> service.getItemRequest(99L, 1L));
+
+        Assertions.assertThat(throwable)
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(message);
+
+        Mockito.verify(userRepository, Mockito.times(1)).existsById(99L);
+        Mockito.verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    void getItemRequest_WrongItemRequestId_ReturnCode404() {
+        String message = String.format("Запрос c id=%d не найдена.", 99L);
+
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(itemRequestRepository.findById(99L))
+                .thenThrow(new NotFoundException(message));
+
+        Throwable throwable = Assertions.catchException(() -> service.getItemRequest(1L, 99L));
+
+        Assertions.assertThat(throwable)
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(message);
+
+        Mockito.verify(userRepository, Mockito.times(1)).existsById(1L);
+        Mockito.verify(itemRequestRepository, Mockito.times(1)).findById(99L);
+        Mockito.verifyNoMoreInteractions(userRepository, itemRequestRepository);
     }
 }

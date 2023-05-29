@@ -17,8 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -119,7 +118,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void findAllByRequestor_WrongId_returnCode404() throws Exception {
+    void findAllByRequestor_WrongUserId_returnCode404() throws Exception {
         when(itemRequestService.findAllByRequestor(anyLong()))
                 .thenThrow(NotFoundException.class);
 
@@ -134,6 +133,92 @@ class ItemRequestControllerTest {
     @Test
     void findAllByRequestor_UserNull_returnCode400() throws Exception {
         mockMvc.perform(get("/requests")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void findAll_Normal() throws Exception {
+        when(itemRequestService.findItemRequests(anyLong(), anyInt(), anyInt()))
+                .thenReturn(List.of(responseDto, responseDto2));
+
+        mockMvc.perform(get("/requests/all")
+                        .header("X-Sharer-User-Id", 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(mapper.writeValueAsString(List.of(responseDto, responseDto2))));
+    }
+
+    @Test
+    void findAll_WrongUserId_returnCode404() throws Exception {
+        when(itemRequestService.findItemRequests(anyLong(), anyInt(), anyInt()))
+                .thenThrow(NotFoundException.class);
+
+        mockMvc.perform(get("/requests/all")
+                        .header("X-Sharer-User-Id", 99L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void findAll_UserNull_returnCode400() throws Exception {
+        mockMvc.perform(get("/requests/all")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getItemRequest_Normal() throws Exception {
+        when(itemRequestService.getItemRequest(1L, 1L))
+                .thenReturn(responseDto);
+
+        mockMvc.perform(get("/requests/{id}", 1L)
+                        .header("X-Sharer-User-Id", 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1L), Long.class))
+                .andExpect(jsonPath("$.description", is("want hammer")));
+    }
+
+    @Test
+    void getItemRequest_WrongUserId_returnCode404() throws Exception {
+        when(itemRequestService.getItemRequest(99L, 1L))
+                .thenThrow(NotFoundException.class);
+
+        mockMvc.perform(get("/requests/{id}", 1L)
+                        .header("X-Sharer-User-Id", 99L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getItemRequest_WrongItemRequestId_returnCode404() throws Exception {
+        when(itemRequestService.getItemRequest(1L, 99L))
+                .thenThrow(NotFoundException.class);
+
+        mockMvc.perform(get("/requests/{id}", 99L)
+                        .header("X-Sharer-User-Id", 1L)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getItemRequest_UserNull_returnCode400() throws Exception {
+        mockMvc.perform(get("/requests/{id}", 1L)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

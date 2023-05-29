@@ -47,6 +47,7 @@ public class ItemRequestController {
             @RequestParam(defaultValue = "20") int size
     ) {
         log.info("GET /requests/all - список запросов");
+        userIsNull(userId);
         Utils.checkPaging(from, size);
         return service.findItemRequests(userId, from, size);
     }
