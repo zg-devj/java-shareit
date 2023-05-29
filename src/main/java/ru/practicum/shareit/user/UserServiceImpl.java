@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(UserDto userDto) {
         // Если email обновляется и обновляемый email существует у другого
         // пользователя вызвать исключение
-        if (userDto.getEmail() != null && userRepository.canNotUpdate(userDto.getId(), userDto.getEmail())) {
+        if (userDto.getEmail() != null && !userRepository.canUpdate(userDto.getId(), userDto.getEmail())) {
             throw new UserAlreadyExistException("Пользователь с таким email существует.");
         }
 
