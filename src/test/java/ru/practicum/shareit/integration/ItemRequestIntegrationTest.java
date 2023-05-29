@@ -1,10 +1,16 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.integration;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.request.ItemRequestService;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
@@ -21,10 +27,10 @@ import static org.hamcrest.Matchers.*;
 @SpringBootTest
 public class ItemRequestIntegrationTest {
 
-    private final EntityManager em;
+    private final EntityManager tem;
+    private final UserRepository userRepository;
     private final ItemRequestRepository itemRequestRepository;
     private final ItemRequestService itemRequestService;
-    private final UserRepository userRepository;
 
     @Test
     void saveItemRequest() {
@@ -40,7 +46,7 @@ public class ItemRequestIntegrationTest {
         ItemRequestDto saved = itemRequestService.saveItemRequest(userSaved.getId(), requestDto);
 
         String query = "select ir from ItemRequest as ir where ir.id=:id";
-        ItemRequest result = em.createQuery(query, ItemRequest.class)
+        ItemRequest result = tem.createQuery(query, ItemRequest.class)
                 .setParameter("id", saved.getId())
                 .getSingleResult();
 
@@ -62,7 +68,7 @@ public class ItemRequestIntegrationTest {
         LocalDateTime now = LocalDateTime.now();
         ItemRequest itemRequest = ItemRequest.builder()
                 .description("steal hammer")
-                .requestor(user)
+                .requestor(user1)
                 .created(now)
                 .build();
         ItemRequest itemRequest1 = itemRequestRepository.save(itemRequest);
@@ -71,7 +77,7 @@ public class ItemRequestIntegrationTest {
         ItemRequestDto itemRequestDto = itemRequestService.getItemRequest(user1.getId(), itemRequest1.getId());
 
         String query = "select ir from ItemRequest as ir where ir.id=:id";
-        ItemRequest result = em.createQuery(query, ItemRequest.class)
+        ItemRequest result = tem.createQuery(query, ItemRequest.class)
                 .setParameter("id", itemRequestDto.getId())
                 .getSingleResult();
 
@@ -79,7 +85,7 @@ public class ItemRequestIntegrationTest {
         assertThat(itemRequestDto.getCreated(), is(now.format(Utils.dtFormatter)));
         assertThat(itemRequestDto.getDescription(), is(itemRequest.getDescription()));
 
-        assertThat(result.getRequestor(), is(user));
+        assertThat(result.getRequestor(), is(user1));
         assertThat(result.getItems(), nullValue());
     }
 }

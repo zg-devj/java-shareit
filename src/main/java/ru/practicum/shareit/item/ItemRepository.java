@@ -18,7 +18,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     // Поиск вещий по названию или описанию
     @Query("select i from Item i " +
-            "where i.available=true and (upper(i.name) like upper(concat('%', ?1, '%')) " +
+            "where i.available=true and length(?1)>0 and " +
+            "(upper(i.name) like upper(concat('%', ?1, '%')) " +
             " or upper(i.description) like upper(concat('%', ?1, '%')))")
     List<Item> search(String text, Pageable pageable);
 }
