@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -95,7 +96,10 @@ public class ItemServiceImpl implements ItemService {
         LocalDateTime now = LocalDateTime.now();
         Page<BookingShort> last = bookingRepository.getLastBooking(itemId, userId,
                 BookingStatus.APPROVED, now, page);
-        return last.get().findFirst().orElse(null);
+        if (last != null) {
+            return last.get().findFirst().orElse(null);
+        }
+        return null;
     }
 
     // Получение следующего бронирования для вещи
@@ -104,7 +108,10 @@ public class ItemServiceImpl implements ItemService {
         LocalDateTime now = LocalDateTime.now();
         Page<BookingShort> next = bookingRepository.getNextBooking(itemId, userId,
                 BookingStatus.APPROVED, now, page);
-        return next.get().findFirst().orElse(null);
+        if (next != null) {
+            return next.get().findFirst().orElse(null);
+        }
+        return null;
     }
 
     // Вернуть вещи с комментариями
@@ -129,10 +136,9 @@ public class ItemServiceImpl implements ItemService {
         List<Item> items = itemRepository.findAllByOwnerIdOrderByIdAsc(userId, pageRequest);
         for (Item item : items) {
             List<Comment> comments = commentRepository.findCommentsByItemIdOrderByCreatedAsc(item.getId());
-            returned.add(ItemMapper.toItemBookingDto(item,
-                    getLastBooking(item.getId(), userId),
-                    getNextBooking(item.getId(), userId),
-                    comments));
+            BookingShort last = getLastBooking(item.getId(), userId);
+            BookingShort next = getNextBooking(item.getId(), userId);
+            returned.add(ItemMapper.toItemBookingDto(item, last, next, comments));
         }
         return returned;
     }

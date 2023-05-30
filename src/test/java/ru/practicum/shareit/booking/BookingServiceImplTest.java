@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -27,6 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -100,11 +102,15 @@ class BookingServiceImplTest {
         Assertions.assertThat(throwable)
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("Пользователь c id=99 не найден.");
+
+        Mockito.verify(userRepository, times(1)).findById(anyLong());
+        Mockito.verifyNoMoreInteractions(userRepository);
     }
 
     @Test
     void createBooking_WrongItemId_ReturnNotFoundException() {
         bookingNewDto.setItemId(99L);
+
         when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
         when(itemRepository.findByIdAndOwnerNot(anyLong(), any(User.class)))
@@ -115,6 +121,11 @@ class BookingServiceImplTest {
         Assertions.assertThat(throwable)
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage("Вещь c id=99 не найдена.");
+
+        Mockito.verify(userRepository, times(1)).findById(anyLong());
+        Mockito.verify(itemRepository, times(1))
+                .findByIdAndOwnerNot(anyLong(), any(User.class));
+        Mockito.verifyNoMoreInteractions(userRepository, itemRepository);
     }
 
     @Test
@@ -283,7 +294,7 @@ class BookingServiceImplTest {
                 anySet(), any(PageRequest.class)))
                 .thenReturn(List.of(booking));
         when(bookingRepoitory.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(anyLong(),
-                any(LocalDateTime.class),any(LocalDateTime.class), any(PageRequest.class)))
+                any(LocalDateTime.class), any(LocalDateTime.class), any(PageRequest.class)))
                 .thenReturn(List.of(booking));
         when(bookingRepoitory.findAllByBookerIdAndStatusEqualsOrderByStartDesc(anyLong(),
                 any(BookingStatus.class), any(PageRequest.class)))
@@ -338,7 +349,7 @@ class BookingServiceImplTest {
                 anySet(), any(PageRequest.class)))
                 .thenReturn(List.of(booking));
         when(bookingRepoitory.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(anyLong(),
-                any(LocalDateTime.class),any(LocalDateTime.class), any(PageRequest.class)))
+                any(LocalDateTime.class), any(LocalDateTime.class), any(PageRequest.class)))
                 .thenReturn(List.of(booking));
         when(bookingRepoitory.findAllByItemOwnerIdAndStatusEqualsOrderByStartDesc(anyLong(),
                 any(BookingStatus.class), any(PageRequest.class)))
