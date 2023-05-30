@@ -35,7 +35,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "from Booking as b " +
             "where b.item.id=?1 and b.item.owner.id=?2 and b.status=?3 and b.start>?4 " +
             "order by b.start asc")
-    List<BookingShort> getNextBooking(Long itemId, Long ownerId, BookingStatus status,
+    Page<BookingShort> getNextBooking(Long itemId, Long ownerId, BookingStatus status,
                                       LocalDateTime now, Pageable pageable);
 
     // Получение последнего бронирования вещи владельца
@@ -43,7 +43,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "from Booking as b " +
             "where b.item.id=?1 and b.item.owner.id=?2 and b.status=?3 and b.start<?4 " +
             "order by b.start desc")
-    List<BookingShort> getLastBooking(Long itemId, Long ownerId, BookingStatus status,
+    Page<BookingShort> getLastBooking(Long itemId, Long ownerId, BookingStatus status,
                                       LocalDateTime now, Pageable pageable);
 
     // для ALL

@@ -268,10 +268,10 @@ class ItemServiceImplTest {
                 .thenReturn(new ArrayList<>());
         when(bookingRepository.getLastBooking(anyLong(), anyLong(), any(BookingStatus.class),
                 any(LocalDateTime.class), any(PageRequest.class)))
-                .thenReturn(new ArrayList<>());
+                .thenReturn(Page.empty());
         when(bookingRepository.getNextBooking(anyLong(), anyLong(), any(BookingStatus.class),
                 any(LocalDateTime.class), any(PageRequest.class)))
-                .thenReturn(new ArrayList<>());
+                .thenReturn(Page.empty());
 
         ItemBookingDto actual = itemService.findById(1L, 1L);
 
@@ -303,10 +303,10 @@ class ItemServiceImplTest {
                 .thenReturn(new ArrayList<>());
         when(bookingRepository.getLastBooking(anyLong(), anyLong(), any(BookingStatus.class),
                 any(LocalDateTime.class), any(PageRequest.class)))
-                .thenReturn(List.of(last));
+                .thenReturn(new PageImpl<>(List.of(last)));
         when(bookingRepository.getNextBooking(anyLong(), anyLong(), any(BookingStatus.class),
                 any(LocalDateTime.class), any(PageRequest.class)))
-                .thenReturn(List.of(next));
+                .thenReturn(new PageImpl<>(List.of(next)));
 
         ItemBookingDto actual = itemService.findById(1L, 1L);
 

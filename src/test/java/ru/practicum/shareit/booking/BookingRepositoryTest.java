@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import ru.practicum.shareit.booking.dto.BookingShort;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
 
@@ -122,7 +122,7 @@ class BookingRepositoryTest {
     }
 
     @Test
-    void test_getNextBooking_getLastBooking() {
+    void test_getLastBooking() {
         User owner = User.builder().name("owner").email("owner@example.com").build();
         tem.persist(owner);
         Item item = Item.builder()
@@ -146,9 +146,47 @@ class BookingRepositoryTest {
                 .build();
         tem.persist(bookingB);
 
-        PageRequest page = PageRequest.of(0,1);
+        PageRequest page = PageRequest.of(0, 1);
 
-        bookingRepository.getLastBooking(item.getId(), owner.getId(), BookingStatus.APPROVED,
-                now,page);
+        BookingShort last = bookingRepository.getLastBooking(item.getId(), owner.getId(), BookingStatus.APPROVED,
+                now, page).get().findFirst().orElse(null);
+        Assertions.assertThat(last).isNotNull()
+                .hasFieldOrPropertyWithValue("id", bookingA.getId())
+                .hasFieldOrPropertyWithValue("bookerId", bookerA.getId());
+    }
+
+    @Test
+    void test_getNextBooking() {
+        User owner = User.builder().name("owner").email("owner@example.com").build();
+        tem.persist(owner);
+        Item item = Item.builder()
+                .name("молоток").description("стальной молоток").available(true)
+                .owner(owner).build();
+        tem.persist(item);
+        User bookerA = User.builder().name("bookerA").email("bookerA@example.com").build();
+        tem.persist(bookerA);
+        Booking bookingA = Booking.builder()
+                .item(item).booker(bookerA)
+                .start(now.minusDays(3)).end(now.plusDays(1))
+                .status(BookingStatus.APPROVED)
+                .build();
+        tem.persist(bookingA);
+        User bookerB = User.builder().name("bookerB").email("bookerB@example.com").build();
+        tem.persist(bookerB);
+        Booking bookingB = Booking.builder()
+                .item(item).booker(bookerB)
+                .start(now.plusDays(2)).end(now.plusDays(4))
+                .status(BookingStatus.APPROVED)
+                .build();
+        tem.persist(bookingB);
+
+        PageRequest page = PageRequest.of(0, 1);
+
+        BookingShort next = bookingRepository.getNextBooking(item.getId(), owner.getId(), BookingStatus.APPROVED,
+                now, page).get().findFirst().orElse(null);
+        Assertions.assertThat(next).isNotNull()
+                .hasFieldOrPropertyWithValue("id", bookingB.getId())
+                .hasFieldOrPropertyWithValue("bookerId", bookerB.getId());
+
     }
 }

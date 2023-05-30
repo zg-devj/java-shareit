@@ -93,24 +93,18 @@ public class ItemServiceImpl implements ItemService {
     private BookingShort getLastBooking(Long itemId, Long userId) {
         PageRequest page = PageRequest.of(0, 1);
         LocalDateTime now = LocalDateTime.now();
-        List<BookingShort> lastList = bookingRepository.getLastBooking(itemId, userId,
+        Page<BookingShort> last = bookingRepository.getLastBooking(itemId, userId,
                 BookingStatus.APPROVED, now, page);
-        if (lastList.size() > 0) {
-            return lastList.get(0);
-        }
-        return null;
+        return last.get().findFirst().orElse(null);
     }
 
     // Получение следующего бронирования для вещи
     private BookingShort getNextBooking(Long itemId, Long userId) {
         PageRequest page = PageRequest.of(0, 1);
         LocalDateTime now = LocalDateTime.now();
-        List<BookingShort> nextList = bookingRepository.getNextBooking(itemId, userId,
+        Page<BookingShort> next = bookingRepository.getNextBooking(itemId, userId,
                 BookingStatus.APPROVED, now, page);
-        if (nextList.size() > 0) {
-            return nextList.get(0);
-        }
-        return null;
+        return next.get().findFirst().orElse(null);
     }
 
     // Вернуть вещи с комментариями
