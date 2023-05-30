@@ -25,7 +25,6 @@ import ru.practicum.shareit.utils.Utils;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;

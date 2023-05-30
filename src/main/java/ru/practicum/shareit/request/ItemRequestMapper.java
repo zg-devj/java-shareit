@@ -26,7 +26,7 @@ public class ItemRequestMapper {
         return ItemRequestDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
-                .created(itemRequest.getCreated().format(Utils.dtFormatter))
+                .created(itemRequest.getCreated())
                 .items(itemRequest.getItems() != null ? ItemMapper.itemToDto(itemRequest.getItems()) : new ArrayList<>())
                 .build();
     }

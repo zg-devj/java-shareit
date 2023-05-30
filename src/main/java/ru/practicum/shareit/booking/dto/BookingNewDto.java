@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.dto;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;

@@ -19,20 +19,19 @@ class UserRepositoryTest {
                 .name("user")
                 .email("user@example.com")
                 .build();
+        tem.persist(user1);
         User user2 = User.builder()
                 .name("tester")
                 .email("tester@example.com")
                 .build();
-        tem.persist(user1);
         tem.persist(user2);
-        tem.flush();
 
-        boolean resultFalse = userRepository.canUpdate(1L,"tester@example.com");
         // пользователь не может быть обновлен
+        boolean resultFalse = userRepository.canUpdate(user1.getId(),"tester@example.com");
         Assertions.assertThat(resultFalse).isFalse();
 
         // пользователь может быть обновлен
-        boolean resultTrue = userRepository.canUpdate(1L,"user-user@example.com");
+        boolean resultTrue = userRepository.canUpdate(user1.getId(),"user-user@example.com");
         Assertions.assertThat(resultTrue).isTrue();
     }
 }

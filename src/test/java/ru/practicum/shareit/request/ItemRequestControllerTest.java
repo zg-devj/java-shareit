@@ -1,6 +1,8 @@
 package ru.practicum.shareit.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import ru.practicum.shareit.utils.Utils;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -51,13 +54,13 @@ class ItemRequestControllerTest {
         responseDto = ItemRequestDto.builder()
                 .id(1L)
                 .description("want hammer")
-                .created(now.format(Utils.dtFormatter))
+                .created(now)
                 .build();
 
         responseDto2 = ItemRequestDto.builder()
                 .id(2L)
                 .description("want drill")
-                .created(now.format(Utils.dtFormatter))
+                .created(now)
                 .build();
     }
 
@@ -66,7 +69,7 @@ class ItemRequestControllerTest {
         when(itemRequestService.saveItemRequest(anyLong(), any(ItemRequestDto.class)))
                 .thenReturn(responseDto);
 
-        mockMvc.perform(post("/requests")
+       mockMvc.perform(post("/requests")
                         .header("X-Sharer-User-Id", 1L)
                         .content(mapper.writeValueAsString(requestDto))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -75,7 +78,7 @@ class ItemRequestControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(responseDto.getId()), Long.class))
                 .andExpect(jsonPath("$.description", is(responseDto.getDescription())))
-                .andExpect(jsonPath("$.created", is(responseDto.getCreated())));
+                .andExpect(jsonPath("$.created", is(responseDto.getCreated().format(Utils.dtFormatter)), LocalDateTime.class));
     }
 
     @Test

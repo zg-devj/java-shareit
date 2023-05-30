@@ -2,17 +2,13 @@ package ru.practicum.shareit.integration;
 
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
-import ru.practicum.shareit.item.CommentRepository;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.ItemService;
@@ -21,6 +17,7 @@ import ru.practicum.shareit.item.dto.CommentNewDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 
 @Transactional
@@ -28,43 +25,39 @@ import java.time.LocalDateTime;
 @SpringBootTest
 public class ItemIntegrationTest {
 
-    private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
-    private final BookingRepository bookingRepository;
-
+    private final EntityManager em;
     private final ItemService itemService;
 
     @Test
     void addComment_Normal() {
+        LocalDateTime now = LocalDateTime.now();
+
         User user1 = User.builder()
                 .name("admin").email("admin@example.com")
                 .build();
+        em.persist(user1);
         User user2 = User.builder()
                 .name("tester").email("tester@example.com")
                 .build();
-        User added1 = userRepository.save(user1);
-        User added2 = userRepository.save(user2);
-
+        em.persist(user2);
         Item item = Item.builder()
                 .name("молоток").description("стальной молоток").available(true)
-                .owner(added1)
+                .owner(user1)
                 .build();
-        Item itemAdded = itemRepository.save(item);
-
-        LocalDateTime now = LocalDateTime.now();
+        em.persist(item);
         Booking booking = Booking.builder()
-                .item(itemAdded).booker(added2).status(BookingStatus.APPROVED)
+                .item(item).booker(user2).status(BookingStatus.APPROVED)
                 .start(now.minusDays(5))
                 .end(now.minusDays(4))
                 .build();
-        bookingRepository.save(booking);
+        em.persist(booking);
 
 
         CommentNewDto comment = CommentNewDto.builder()
                 .text("отличный молоток")
                 .build();
 
-        CommentDto commentDto = itemService.addComment(added2.getId(), itemAdded.getId(), comment);
+        CommentDto commentDto = itemService.addComment(user2.getId(), item.getId(), comment);
 
         Assertions.assertThat(commentDto.getAuthorName()).isEqualTo("tester");
         Assertions.assertThat(commentDto.getId()).isEqualTo(1L);
