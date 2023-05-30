@@ -24,11 +24,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select b " +
             "from Booking as b " +
             "where b.id=?1 and( b.booker.id=?2 or b.item.owner.id=?2 )")
-    Optional<Booking> findBookingByOwnerOrBooker(Long id, Long finderId);
+    Optional<Booking> findBookingByOwnerOrBooker(Long bookingId, Long finderId);
 
     // Получение бронирования владельцем
     @Query("select b from Booking as b where b.id=?1 and b.item.owner.id=?2")
-    Optional<Booking> findBookingForApprove(Long bookingId, Long userId);
+    Optional<Booking> findBookingForApprove(Long bookingId, Long ownerId);
 
     // Получение следующего бронирования вещи владельца
     @Query("select new ru.practicum.shareit.booking.dto.BookingShort(b.id, b.booker.id) " +

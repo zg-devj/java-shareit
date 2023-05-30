@@ -31,9 +31,6 @@ class ItemRequestServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private Pageable pageableMock;
-
     @InjectMocks
     private ItemRequestServiceImpl service;
 

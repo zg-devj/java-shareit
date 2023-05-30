@@ -16,8 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class ItemRepositoryTest {
 
-    private final ItemRepository itemRepository;
     private final TestEntityManager tem;
+    private final ItemRepository itemRepository;
 
     User user1;
     Item item1;
