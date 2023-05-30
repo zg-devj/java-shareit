@@ -23,7 +23,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     // Получение бронирования для владельца или забронировавшего
     @Query("select b " +
             "from Booking as b " +
-            "where b.id=?1 and( b.booker.id=?2 or b.item.owner.id=?2 )")
+            "where b.id=?1 and ( b.booker.id=?2 or b.item.owner.id=?2 )")
     Optional<Booking> findBookingByOwnerOrBooker(Long bookingId, Long finderId);
 
     // Получение бронирования владельцем
@@ -35,7 +35,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "from Booking as b " +
             "where b.item.id=?1 and b.item.owner.id=?2 and b.status=?3 and b.start>?4 " +
             "order by b.start asc")
-    List<BookingShort> getNextBooking(Long itemId, Long userId, BookingStatus status,
+    List<BookingShort> getNextBooking(Long itemId, Long ownerId, BookingStatus status,
                                       LocalDateTime now, Pageable pageable);
 
     // Получение последнего бронирования вещи владельца
@@ -43,7 +43,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "from Booking as b " +
             "where b.item.id=?1 and b.item.owner.id=?2 and b.status=?3 and b.start<?4 " +
             "order by b.start desc")
-    List<BookingShort> getLastBooking(Long itemId, Long userId, BookingStatus status,
+    List<BookingShort> getLastBooking(Long itemId, Long ownerId, BookingStatus status,
                                       LocalDateTime now, Pageable pageable);
 
     // для ALL

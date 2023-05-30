@@ -1,10 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -12,16 +9,13 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.jdbc.Sql;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
-@Slf4j
 @DataJpaTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 class BookingRepositoryTest {
 
     private final TestEntityManager tem;
@@ -29,79 +23,63 @@ class BookingRepositoryTest {
 
     private final LocalDateTime now = LocalDateTime.now();
 
-    private User booker;
-    private User addedBooker;
-    private User owner;
-    private User addedOwner;
-    private Item item;
-    private Item addedItem;
-    private Booking booking;
-    private Booking addedBooking;
-    private Booking booking2;
-    private Booking addedBooking2;
-
-    @BeforeEach
-    void setUp() {
-        booker = User.builder()
-                .name("booker").email("booker@example.com")
-                .build();
-        addedBooker = tem.persistAndFlush(booker);
-        owner = User.builder()
-                .name("owner").email("owner@example.com")
-                .build();
-        addedOwner = tem.persistAndFlush(owner);
-        item = Item.builder()
-                .name("молоток")
-                .description("стальной молоток")
-                .available(true)
-                .owner(addedOwner)
-                .build();
-        addedItem = tem.persistAndFlush(item);
-        booking = Booking.builder()
-                .start(now.minusDays(4))
-                .end(now.minusDays(3))
-                .booker(addedBooker)
-                .item(addedItem)
-                .status(BookingStatus.APPROVED)
-                .build();
-        addedBooking = tem.persistAndFlush(booking);
-        booking2 = Booking.builder()
-                .start(now.plusDays(2))
-                .end(now.plusDays(4))
-                .booker(addedBooker)
-                .item(addedItem)
-                .status(BookingStatus.APPROVED)
-                .build();
-        addedBooking2 = tem.persistAndFlush(booking);
-    }
-
-
     @Test
     void test_findBookingForComment() {
+        User owner = User.builder().name("owner").email("owner@example.com").build();
+        tem.persist(owner);
+        Item item = Item.builder()
+                .name("молоток").description("стальной молоток").available(true)
+                .owner(owner).build();
+        tem.persist(item);
+        User booker = User.builder().name("booker").email("booker@example.com").build();
+        tem.persist(booker);
+        Booking booking = Booking.builder()
+                .item(item).booker(booker)
+                .start(now.minusDays(5)).end(now.minusDays(4))
+                .status(BookingStatus.APPROVED)
+                .build();
+        tem.persist(booking);
 
-        PageRequest pager = PageRequest.of(0, 1);
+        PageRequest page = PageRequest.of(0, 1);
 
-        Page<Booking> returned = bookingRepository.findBookingForComment(1L, 1L, now, BookingStatus.APPROVED, pager);
-        Booking bookingReturned = returned.get().findFirst().orElse(null);
+        Page<Booking> finder = bookingRepository.findBookingForComment(booker.getId(), item.getId(), now, BookingStatus.APPROVED,
+                page);
+        Assertions.assertThat(finder.get().findFirst().orElse(null)).isNotNull().isEqualTo(booking);
 
-        Assertions.assertThat(bookingReturned).isNotNull()
-                .isEqualTo(addedBooking);
+        Page<Booking> finder2 = bookingRepository.findBookingForComment(999L, item.getId(), now, BookingStatus.APPROVED,
+                page);
+        Assertions.assertThat(finder2.get().findFirst().orElse(null)).isNull();
     }
 
     @Test
     void test_findBookingByOwnerOrBooker() {
+        User owner = User.builder().name("owner").email("owner@example.com").build();
+        tem.persist(owner);
+        Item item = Item.builder()
+                .name("молоток").description("стальной молоток").available(true)
+                .owner(owner).build();
+        tem.persist(item);
+        User booker = User.builder().name("booker").email("booker@example.com").build();
+        tem.persist(booker);
+        Booking booking = Booking.builder()
+                .item(item).booker(booker)
+                .start(now.plusDays(3)).end(now.plusDays(5))
+                .status(BookingStatus.APPROVED)
+                .build();
+        tem.persist(booking);
 
-        // By Booker
+        // By Owner
         Booking bookingReturned = bookingRepository
-                .findBookingByOwnerOrBooker(2L, addedBooker.getId()).orElse(null);
+                .findBookingByOwnerOrBooker(booking.getId(), owner.getId()).orElse(null);
         Assertions.assertThat(bookingReturned).isNotNull()
-                .isEqualTo(addedBooking2);
+                .isEqualTo(booking);
 
         // By Owner
         Booking bookingReturned2 = bookingRepository
-                .findBookingByOwnerOrBooker(2L, owner.getId()).orElse(null);
+                .findBookingByOwnerOrBooker(booking.getId(), booker.getId()).orElse(null);
         Assertions.assertThat(bookingReturned2).isNotNull()
-                .isEqualTo(addedBooking2);
+                .isEqualTo(booking);
+
 
         // Wrong BookingId
         Booking bookingReturned3 = bookingRepository
@@ -110,7 +88,67 @@ class BookingRepositoryTest {
 
         // Wrong BookerId or OwnerId
         Booking bookingReturned4 = bookingRepository
-                .findBookingByOwnerOrBooker(1L, 99L).orElse(null);
+                .findBookingByOwnerOrBooker(booking.getId(), 99L).orElse(null);
         Assertions.assertThat(bookingReturned4).isNull();
+    }
+
+    @Test
+    void test_findBookingForApprove() {
+        User owner = User.builder().name("owner").email("owner@example.com").build();
+        tem.persist(owner);
+        Item item = Item.builder()
+                .name("молоток").description("стальной молоток").available(true)
+                .owner(owner).build();
+        tem.persist(item);
+        User booker = User.builder().name("booker").email("booker@example.com").build();
+        tem.persist(booker);
+        Booking booking = Booking.builder()
+                .item(item).booker(booker)
+                .start(now.plusDays(3)).end(now.plusDays(5))
+                .status(BookingStatus.APPROVED)
+                .build();
+        tem.persist(booking);
+
+        // Correct
+        Booking bookingRet = bookingRepository
+                .findBookingForApprove(booking.getId(), owner.getId()).orElse(null);
+        Assertions.assertThat(bookingRet).isNotNull()
+                .isEqualTo(booking);
+
+        // Wrong owner
+        Booking bookingRet2 = bookingRepository
+                .findBookingForApprove(booking.getId(), 99L).orElse(null);
+        Assertions.assertThat(bookingRet2).isNull();
+    }
+
+    @Test
+    void test_getNextBooking_getLastBooking() {
+        User owner = User.builder().name("owner").email("owner@example.com").build();
+        tem.persist(owner);
+        Item item = Item.builder()
+                .name("молоток").description("стальной молоток").available(true)
+                .owner(owner).build();
+        tem.persist(item);
+        User bookerA = User.builder().name("bookerA").email("bookerA@example.com").build();
+        tem.persist(bookerA);
+        Booking bookingA = Booking.builder()
+                .item(item).booker(bookerA)
+                .start(now.minusDays(3)).end(now.plusDays(1))
+                .status(BookingStatus.APPROVED)
+                .build();
+        tem.persist(bookingA);
+        User bookerB = User.builder().name("bookerB").email("bookerB@example.com").build();
+        tem.persist(bookerB);
+        Booking bookingB = Booking.builder()
+                .item(item).booker(bookerB)
+                .start(now.plusDays(2)).end(now.plusDays(4))
+                .status(BookingStatus.APPROVED)
+                .build();
+        tem.persist(bookingB);
+
+        PageRequest page = PageRequest.of(0,1);
+
+        bookingRepository.getLastBooking(item.getId(), owner.getId(), BookingStatus.APPROVED,
+                now,page);
     }
 }
