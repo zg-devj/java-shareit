@@ -281,7 +281,7 @@ class ItemServiceImplTest {
 
         Mockito.verify(itemRepository, Mockito.times(1)).findById(1L);
         Mockito.verify(commentRepository, Mockito.times(1))
-                .findCommentsByItemIdOrderByCreatedAsc(1l);
+                .findCommentsByItemIdOrderByCreatedAsc(1L);
         Mockito.verify(bookingRepository, Mockito.times(1))
                 .getLastBooking(anyLong(), anyLong(), any(BookingStatus.class),
                         any(LocalDateTime.class), any(PageRequest.class));
@@ -317,7 +317,7 @@ class ItemServiceImplTest {
 
         Mockito.verify(itemRepository, Mockito.times(1)).findById(1L);
         Mockito.verify(commentRepository, Mockito.times(1))
-                .findCommentsByItemIdOrderByCreatedAsc(1l);
+                .findCommentsByItemIdOrderByCreatedAsc(1L);
         Mockito.verify(bookingRepository, Mockito.times(1))
                 .getLastBooking(anyLong(), anyLong(), any(BookingStatus.class),
                         any(LocalDateTime.class), any(PageRequest.class));

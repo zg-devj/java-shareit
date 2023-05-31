@@ -5,15 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.request.ItemRequestService;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.utils.Utils;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
@@ -27,11 +22,7 @@ import static org.hamcrest.Matchers.*;
 public class ItemRequestIntegrationTest {
 
     private final EntityManager em;
-    private final UserRepository userRepository;
-    private final ItemRequestRepository itemRequestRepository;
     private final ItemRequestService itemRequestService;
-    private final ItemService itemService;
-    private final ItemRepository itemRepository;
 
 
     @Test

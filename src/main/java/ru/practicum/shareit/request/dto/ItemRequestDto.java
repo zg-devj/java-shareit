@@ -1,12 +1,7 @@
 package ru.practicum.shareit.request.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.OptBoolean;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import lombok.*;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.constraints.NotEmpty;

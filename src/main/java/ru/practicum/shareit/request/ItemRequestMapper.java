@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.utils.Utils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
