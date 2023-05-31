@@ -5,25 +5,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.dto.BookingNewDto;
 import ru.practicum.shareit.exceptions.BadRequestException;
-import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
 
 @ExtendWith(MockitoExtension.class)
 class BookingServiceImplValidDateTest {
-    @Mock
-    private BookingRepository bookingRepoitory;
-
-    @Mock
-    private ItemRepository itemRepository;
-
-    @Mock
-    private UserRepository userRepository;
 
     @InjectMocks
     private BookingServiceImpl bookingService;
@@ -39,7 +28,6 @@ class BookingServiceImplValidDateTest {
                 .start(now.plusDays(2))
                 .end(now.plusDays(3))
                 .build();
-        System.out.println("ok");
     }
 
     //region Valid date
@@ -109,6 +97,4 @@ class BookingServiceImplValidDateTest {
                         "позже даты окончания бронирования.");
     }
     //endregion
-
-
 }
