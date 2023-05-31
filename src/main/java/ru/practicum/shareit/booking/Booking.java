@@ -37,17 +37,4 @@ public class Booking {
 
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
-
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        Booking booking = (Booking) o;
-//        return Objects.equals(id, booking.id);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(id);
-//    }
 }
