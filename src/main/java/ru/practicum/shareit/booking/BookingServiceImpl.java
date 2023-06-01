@@ -82,23 +82,12 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.bookingToDto(booking);
     }
 
-    private PageRequest getPageRequest(int from, int size) {
-        int page = from / size;
-        return PageRequest.of(page, size);
-    }
-
-    private void checkUser(long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException(String.format("Пользователь c id=%d не найден.", userId));
-        }
-    }
-
     // Вернуть все бронирования вещи бронирующего
     @Override
     public List<BookingDto> getAllBookings(long userId, String stateS, int from, int size) {
         State state = checkState(stateS);
         checkUser(userId);
-        PageRequest pageRequest = getPageRequest(from,size);
+        PageRequest pageRequest = getPageRequest(from, size);
         LocalDateTime now = LocalDateTime.now();
         switch (state) {
             case WAITING:
@@ -132,7 +121,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> getAllBookingsForOwner(long userId, String stateS, int from, int size) {
         State state = checkState(stateS);
         checkUser(userId);
-        PageRequest pageRequest = getPageRequest(from,size);
+        PageRequest pageRequest = getPageRequest(from, size);
         LocalDateTime now = LocalDateTime.now();
 
         switch (state) {
@@ -165,6 +154,18 @@ public class BookingServiceImpl implements BookingService {
             return State.valueOf(state);
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("Unknown state: " + state);
+        }
+    }
+
+    private PageRequest getPageRequest(int from, int size) {
+        int page = from / size;
+        return PageRequest.of(page, size);
+    }
+
+    // Проверка пользователя по id
+    private void checkUser(long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException(String.format("Пользователь c id=%d не найден.", userId));
         }
     }
 
