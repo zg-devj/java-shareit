@@ -22,8 +22,8 @@ public class UserIntegrationTest {
     private final UserRepository userRepository;
     private final UserService userService;
 
-    User userA;
-    User userB;
+    private User userA;
+    private User userB;
 
     @BeforeEach
     void setUp() {
@@ -31,7 +31,7 @@ public class UserIntegrationTest {
     }
 
     @Test
-    void test_saveUser_Normal() {
+    void saveUser_Normal() {
         UserDto userDto = UserDto.builder().name("owner").email("owner@example.com").build();
 
         UserDto saved = userService.saveUser(userDto);
@@ -44,7 +44,7 @@ public class UserIntegrationTest {
     }
 
     @Test
-    void test_updateUser_Normal() {
+    void updateUser_Normal() {
         UserDto userDto = UserMapper.userToDto(userA);
 
         userDto.setName("ownerUpdated");
@@ -60,7 +60,7 @@ public class UserIntegrationTest {
     }
 
     @Test
-    void test_findUserById_Normal() {
+    void findUserById_Normal() {
         Long userId = userA.getId();
 
         UserDto returned = userService.findUserById(userId);
@@ -73,7 +73,7 @@ public class UserIntegrationTest {
     }
 
     @Test
-    void test_deleteUser_Normal() {
+    void deleteUser_Normal() {
         Long userId = userA.getId();
 
         long beforeDelete = userRepository.count();
@@ -90,7 +90,7 @@ public class UserIntegrationTest {
     }
 
     @Test
-    void test_findAllUsers_Normal() {
+    void findAllUsers_Normal() {
         List<UserDto> list = userService.findAllUsers();
 
         Assertions.assertThat(list)
