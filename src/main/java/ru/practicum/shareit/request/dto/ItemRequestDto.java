@@ -21,10 +21,9 @@ public class ItemRequestDto {
     @NotEmpty
     @Size(max = 255)
     private String description;
-    
+
     private LocalDateTime created;
 
-    // TODO: 01.06.2023 Delete
-//    @Setter
+    @Setter
     private List<ItemDto> items = new ArrayList<>();
 }
