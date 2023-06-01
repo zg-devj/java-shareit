@@ -2,6 +2,7 @@ package ru.practicum.shareit.request.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.constraints.NotEmpty;
@@ -23,7 +24,8 @@ public class ItemRequestDto {
     @Size(max = 255)
     private String description;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+//    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+//    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime created;
 
     @Setter

@@ -269,7 +269,7 @@ class BookingServiceImplTest {
                 .thenReturn(false);
 
         Throwable throwable = Assertions.catchException(() -> bookingService
-                .getAllBookings(99L, State.ALL, 0, 20));
+                .getAllBookings(99L, "ALL", 0, 20));
 
         Assertions.assertThat(throwable)
                 .isInstanceOf(NotFoundException.class)
@@ -299,22 +299,22 @@ class BookingServiceImplTest {
                 any(BookingStatus.class), any(PageRequest.class)))
                 .thenReturn(List.of(booking));
 
-        List<BookingDto> listAll = bookingService.getAllBookings(1L, State.ALL, 0, 20);
+        List<BookingDto> listAll = bookingService.getAllBookings(1L, "ALL", 0, 20);
         Assertions.assertThat(listAll).hasSize(1);
 
-        List<BookingDto> listFuture = bookingService.getAllBookings(1L, State.FUTURE, 0, 20);
+        List<BookingDto> listFuture = bookingService.getAllBookings(1L, "FUTURE", 0, 20);
         Assertions.assertThat(listFuture).hasSize(1);
 
-        List<BookingDto> listPast = bookingService.getAllBookings(1L, State.PAST, 0, 20);
+        List<BookingDto> listPast = bookingService.getAllBookings(1L, "PAST", 0, 20);
         Assertions.assertThat(listPast).hasSize(1);
 
-        List<BookingDto> listReject = bookingService.getAllBookings(1L, State.REJECTED, 0, 20);
+        List<BookingDto> listReject = bookingService.getAllBookings(1L, "REJECTED", 0, 20);
         Assertions.assertThat(listReject).hasSize(1);
 
-        List<BookingDto> listCurrent = bookingService.getAllBookings(1L, State.CURRENT, 0, 20);
+        List<BookingDto> listCurrent = bookingService.getAllBookings(1L, "CURRENT", 0, 20);
         Assertions.assertThat(listCurrent).hasSize(1);
 
-        List<BookingDto> listWaiting = bookingService.getAllBookings(1L, State.WAITING, 0, 20);
+        List<BookingDto> listWaiting = bookingService.getAllBookings(1L, "WAITING", 0, 20);
         Assertions.assertThat(listWaiting).hasSize(1);
     }
 
@@ -324,7 +324,7 @@ class BookingServiceImplTest {
                 .thenReturn(false);
 
         Throwable throwable = Assertions.catchException(() -> bookingService
-                .getAllBookingsForOwner(99L, State.ALL, 0, 20));
+                .getAllBookingsForOwner(99L, "ALL", 0, 20));
 
         Assertions.assertThat(throwable)
                 .isInstanceOf(NotFoundException.class)
@@ -354,22 +354,22 @@ class BookingServiceImplTest {
                 any(BookingStatus.class), any(PageRequest.class)))
                 .thenReturn(List.of(booking));
 
-        List<BookingDto> listAll = bookingService.getAllBookingsForOwner(1L, State.ALL, 0, 20);
+        List<BookingDto> listAll = bookingService.getAllBookingsForOwner(1L, "ALL", 0, 20);
         Assertions.assertThat(listAll).hasSize(1);
 
-        List<BookingDto> listFuture = bookingService.getAllBookingsForOwner(1L, State.FUTURE, 0, 20);
+        List<BookingDto> listFuture = bookingService.getAllBookingsForOwner(1L, "FUTURE", 0, 20);
         Assertions.assertThat(listFuture).hasSize(1);
 
-        List<BookingDto> listPast = bookingService.getAllBookingsForOwner(1L, State.PAST, 0, 20);
+        List<BookingDto> listPast = bookingService.getAllBookingsForOwner(1L, "PAST", 0, 20);
         Assertions.assertThat(listPast).hasSize(1);
 
-        List<BookingDto> listReject = bookingService.getAllBookingsForOwner(1L, State.REJECTED, 0, 20);
+        List<BookingDto> listReject = bookingService.getAllBookingsForOwner(1L, "REJECTED", 0, 20);
         Assertions.assertThat(listReject).hasSize(1);
 
-        List<BookingDto> listCurrent = bookingService.getAllBookingsForOwner(1L, State.CURRENT, 0, 20);
+        List<BookingDto> listCurrent = bookingService.getAllBookingsForOwner(1L, "CURRENT", 0, 20);
         Assertions.assertThat(listCurrent).hasSize(1);
 
-        List<BookingDto> listWaiting = bookingService.getAllBookingsForOwner(1L, State.WAITING, 0, 20);
+        List<BookingDto> listWaiting = bookingService.getAllBookingsForOwner(1L, "WAITING", 0, 20);
         Assertions.assertThat(listWaiting).hasSize(1);
     }
 }

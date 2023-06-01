@@ -61,9 +61,6 @@ class ItemServiceImplTest {
     private ItemDto itemDtoMustBe;
     private ItemBookingDto itemBookingDtoMustBe;
     private Item item2;
-//
-//    private User user2;
-//    private Item item3;
 
     @BeforeEach
     void setUp() {
@@ -95,16 +92,6 @@ class ItemServiceImplTest {
                 .name("drill").description("best drill").available(false)
                 .owner(user)
                 .build();
-//
-//        user2 = User.builder()
-//                .id(2L).name("user2").email("user2@example.com")
-//                .build();
-//
-//        item3 = Item.builder()
-//                .id(2L)
-//                .name("trap").description("long best trap").available(true)
-//                .owner(user2)
-//                .build();
     }
 
     @Test

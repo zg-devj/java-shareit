@@ -55,11 +55,10 @@ public class BookingController {
             @RequestParam(defaultValue = "0") int from,
             @RequestParam(defaultValue = "20") int size
     ) {
-        State state1 = checkState(state);
         Utils.checkPaging(from, size);
 
         log.info("GET /bookings - все бронирования.");
-        return bookingService.getAllBookings(userId, state1, from, size);
+        return bookingService.getAllBookings(userId, state, from, size);
     }
 
     @GetMapping("/owner")
@@ -69,18 +68,9 @@ public class BookingController {
             @RequestParam(defaultValue = "0") int from,
             @RequestParam(defaultValue = "20") int size
     ) {
-        State state1 = checkState(state);
         Utils.checkPaging(from, size);
 
         log.info("GET /bookings/owner - все бронирования владельца.");
-        return bookingService.getAllBookingsForOwner(userId, state1, from, size);
-    }
-
-    private State checkState(String state) {
-        try {
-            return State.valueOf(state);
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Unknown state: " + state);
-        }
+        return bookingService.getAllBookingsForOwner(userId, state, from, size);
     }
 }

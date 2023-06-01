@@ -82,15 +82,24 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.bookingToDto(booking);
     }
 
-    // Вернуть все бронирования вещи бронирующего
-    @Override
-    public List<BookingDto> getAllBookings(Long userId, State state, int from, int size) {
+    private PageRequest getPageRequest(int from, int size) {
+        int page = from / size;
+        return PageRequest.of(page, size);
+    }
+
+    private void checkUser(long userId) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException(String.format("Пользователь c id=%d не найден.", userId));
         }
+    }
+
+    // Вернуть все бронирования вещи бронирующего
+    @Override
+    public List<BookingDto> getAllBookings(long userId, String stateS, int from, int size) {
+        State state = checkState(stateS);
+        checkUser(userId);
+        PageRequest pageRequest = getPageRequest(from,size);
         LocalDateTime now = LocalDateTime.now();
-        int page = from / size;
-        PageRequest pageRequest = PageRequest.of(page, size);
         switch (state) {
             case WAITING:
                 return BookingMapper.bookingToDto(bookingRepository
@@ -120,13 +129,12 @@ public class BookingServiceImpl implements BookingService {
 
     // Вернуть все бронирования вещи для владельца
     @Override
-    public List<BookingDto> getAllBookingsForOwner(Long userId, State state, int from, int size) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException(String.format("Пользователь c id=%d не найден.", userId));
-        }
+    public List<BookingDto> getAllBookingsForOwner(long userId, String stateS, int from, int size) {
+        State state = checkState(stateS);
+        checkUser(userId);
+        PageRequest pageRequest = getPageRequest(from,size);
         LocalDateTime now = LocalDateTime.now();
-        int page = from / size;
-        PageRequest pageRequest = PageRequest.of(page, size);
+
         switch (state) {
             case WAITING:
                 return BookingMapper.bookingToDto(bookingRepository
@@ -149,6 +157,14 @@ public class BookingServiceImpl implements BookingService {
             case ALL:
             default:
                 return BookingMapper.bookingToDto(bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId, pageRequest));
+        }
+    }
+
+    private State checkState(String state) {
+        try {
+            return State.valueOf(state);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Unknown state: " + state);
         }
     }
 

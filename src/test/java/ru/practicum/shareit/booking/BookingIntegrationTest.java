@@ -65,22 +65,22 @@ public class BookingIntegrationTest {
         em.persist(booking4);
         //endregion
 
-        List<BookingDto> list1 = bookingService.getAllBookings(booker.getId(), State.ALL, 0, 20);
+        List<BookingDto> list1 = bookingService.getAllBookings(booker.getId(), "ALL", 0, 20);
         Assertions.assertThat(list1).isNotEmpty().hasSize(4);
 
-        List<BookingDto> list2 = bookingService.getAllBookings(booker.getId(), State.PAST, 0, 20);
+        List<BookingDto> list2 = bookingService.getAllBookings(booker.getId(), "PAST", 0, 20);
         Assertions.assertThat(list2).isNotEmpty().hasSize(1);
 
-        List<BookingDto> list3 = bookingService.getAllBookings(booker.getId(), State.FUTURE, 0, 20);
+        List<BookingDto> list3 = bookingService.getAllBookings(booker.getId(), "FUTURE", 0, 20);
         Assertions.assertThat(list3).isNotEmpty().hasSize(1);
 
-        List<BookingDto> list4 = bookingService.getAllBookings(booker.getId(), State.CURRENT, 0, 20);
+        List<BookingDto> list4 = bookingService.getAllBookings(booker.getId(), "CURRENT", 0, 20);
         Assertions.assertThat(list4).isNotEmpty().hasSize(2);
 
-        List<BookingDto> list5 = bookingService.getAllBookings(booker.getId(), State.REJECTED, 0, 20);
+        List<BookingDto> list5 = bookingService.getAllBookings(booker.getId(), "REJECTED", 0, 20);
         Assertions.assertThat(list5).isNotEmpty().hasSize(2);
 
-        List<BookingDto> list6 = bookingService.getAllBookings(booker.getId(), State.WAITING, 0, 20);
+        List<BookingDto> list6 = bookingService.getAllBookings(booker.getId(), "WAITING", 0, 20);
         Assertions.assertThat(list6).isNotEmpty().hasSize(1);
     }
 }
