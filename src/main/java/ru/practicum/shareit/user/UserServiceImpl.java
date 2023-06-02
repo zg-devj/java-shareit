@@ -19,6 +19,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    // Добавление пользователя
     @Override
     @Transactional
     public UserDto saveUser(UserDto userDto) {
@@ -27,17 +28,19 @@ public class UserServiceImpl implements UserService {
         return UserMapper.userToDto(saved);
     }
 
+    // Обновление пользователя
     @Override
     @Transactional
     public UserDto updateUser(UserDto userDto) {
-        // проверка
-        if (userDto.getEmail() != null && userRepository.canNotUpdate(userDto.getId(), userDto.getEmail())) {
+        // Если email обновляется и обновляемый email существует у другого
+        // пользователя вызвать исключение
+        if (userDto.getEmail() != null && !userRepository.canUpdate(userDto.getId(), userDto.getEmail())) {
             throw new UserAlreadyExistException("Пользователь с таким email существует.");
         }
 
+        // Получаем пользователя для обновления
         User updated = userRepository.findById(userDto.getId())
-                .orElseThrow(() -> new NotFoundException(
-                        String.format("Пользователь c id=%d не найден", userDto.getId())));
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id=%d не найден.", userDto.getId())));
 
         if (userDto.getEmail() != null) {
             log.info("Обновляется email пользователя c id={}.", updated.getId());
@@ -50,14 +53,16 @@ public class UserServiceImpl implements UserService {
         return UserMapper.userToDto(userRepository.save(updated));
     }
 
+    // Поиск пользователя по id
     @Override
     public UserDto findUserById(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id=%d не найден", userId)));
+                .orElseThrow(() -> new NotFoundException(String.format("Пользователь c id=%d не найден.", userId)));
         log.info("Возращен пользовател с id={}.", user.getId());
         return UserMapper.userToDto(user);
     }
 
+    // Удаление пользователя
     @Override
     @Transactional
     public void deleteUser(Long userId) {
@@ -65,6 +70,7 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(userId);
     }
 
+    // Возврат всех пользователей
     @Override
     public List<UserDto> findAllUsers() {
         List<User> users = userRepository.findAll();

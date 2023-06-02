@@ -4,14 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exceptions.BadRequestException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentNewDto;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.utils.Utils;
 
 import javax.validation.Valid;
 import java.util.List;
+
+import static ru.practicum.shareit.utils.Utils.userIsNull;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,8 +28,8 @@ public class ItemController {
             @PathVariable Long itemId,
             @RequestBody CommentNewDto commentNewDto
     ) {
-        CommentDto result = itemService.addComment(userId, itemId, commentNewDto);
-        return result;
+        log.info("POST /items/{}/comment - добавление комментария пользователем {}", itemId, userId);
+        return itemService.addComment(userId, itemId, commentNewDto);
     }
 
     @PostMapping
@@ -38,8 +40,7 @@ public class ItemController {
     ) {
         userIsNull(userId);
         log.info("POST /items - добавление вещи пользователем {}", userId);
-        ItemDto created = itemService.saveItem(userId, itemDto);
-        return created;
+        return itemService.saveItem(userId, itemDto);
     }
 
     @PatchMapping("/{id}")
@@ -66,24 +67,24 @@ public class ItemController {
 
     @GetMapping
     public List<ItemBookingDto> findAllByUserId(
-            @RequestHeader(value = "X-Sharer-User-Id") Long userId
+            @RequestHeader(value = "X-Sharer-User-Id") Long userId,
+            @RequestParam(defaultValue = "0") int from,
+            @RequestParam(defaultValue = "20") int size
     ) {
         userIsNull(userId);
+        Utils.checkPaging(from, size);
         log.info("GET /items - просмотр вещей пользователем с id={}", userId);
-        return itemService.findAllByUserId(userId);
+        return itemService.findAllByUserId(userId, from, size);
     }
 
 
     @GetMapping("/search")
     public List<ItemDto> search(
-            @RequestParam String text
+            @RequestParam String text,
+            @RequestParam(defaultValue = "0") int from,
+            @RequestParam(defaultValue = "20") int size
     ) {
-        return itemService.search(text);
-    }
-
-    private void userIsNull(Long userId) {
-        if (userId == null) {
-            throw new BadRequestException("Не известен пользователь.");
-        }
+        Utils.checkPaging(from, size);
+        return itemService.search(text, from, size);
     }
 }

@@ -13,68 +13,80 @@ import java.util.Set;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    // проверяем, было ли бронирование вещи пользователем
+    // Проверяем, было ли бронирование вещи пользователем
     @Query("select b from Booking as b " +
             "where b.booker.id=?1 and b.item.id=?2 and " +
             "b.end<?3 and b.status=?4 order by b.end asc ")
     Page<Booking> findBookingForComment(Long bookerId, Long itemId,
                                         LocalDateTime now, BookingStatus status, Pageable pageable);
 
+    // Получение бронирования для владельца или забронировавшего
     @Query("select b " +
             "from Booking as b " +
-            "where b.id=?1 and( b.booker.id=?2 or b.item.owner.id=?2 )")
-    Optional<Booking> findBookingByOwnerOrBooker(Long id, Long finderId);
+            "where b.id=?1 and ( b.booker.id=?2 or b.item.owner.id=?2 )")
+    Optional<Booking> findBookingByOwnerOrBooker(Long bookingId, Long finderId);
 
+    // Получение бронирования владельцем
     @Query("select b from Booking as b where b.id=?1 and b.item.owner.id=?2")
-    Optional<Booking> findBookingForApprove(Long bookingId, Long userId);
+    Optional<Booking> findBookingForApprove(Long bookingId, Long ownerId);
 
+    // Получение следующего бронирования вещи владельца
     @Query("select new ru.practicum.shareit.booking.dto.BookingShort(b.id, b.booker.id) " +
             "from Booking as b " +
             "where b.item.id=?1 and b.item.owner.id=?2 and b.status=?3 and b.start>?4 " +
             "order by b.start asc")
-    List<BookingShort> getNextBooking(Long itemId, Long userId, BookingStatus status,
+    Page<BookingShort> getNextBooking(Long itemId, Long ownerId, BookingStatus status,
                                       LocalDateTime now, Pageable pageable);
 
+    // Получение последнего бронирования вещи владельца
     @Query("select new ru.practicum.shareit.booking.dto.BookingShort(b.id, b.booker.id) " +
             "from Booking as b " +
             "where b.item.id=?1 and b.item.owner.id=?2 and b.status=?3 and b.start<?4 " +
             "order by b.start desc")
-    List<BookingShort> getLastBooking(Long itemId, Long userId, BookingStatus status,
+    Page<BookingShort> getLastBooking(Long itemId, Long ownerId, BookingStatus status,
                                       LocalDateTime now, Pageable pageable);
 
     // для ALL
-    List<Booking> findAllByBookerIdOrderByStartDesc(Long bookerId);
+    List<Booking> findAllByBookerIdOrderByStartDesc(Long bookerId, Pageable pageable);
 
     // для ALL если owner
-    List<Booking> findAllByItemOwnerIdOrderByStartDesc(Long ownerId);
+    List<Booking> findAllByItemOwnerIdOrderByStartDesc(Long ownerId, Pageable pageable);
 
     // для FUTURE
-    List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(Long bookerId, LocalDateTime dateTime);
+    List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(Long bookerId, LocalDateTime dateTime,
+                                                                 Pageable pageable);
 
     // для FUTURE если owner
-    List<Booking> findAllByItemOwnerIdAndStartAfterOrderByStartDesc(Long ownerId, LocalDateTime dateTime);
+    List<Booking> findAllByItemOwnerIdAndStartAfterOrderByStartDesc(Long ownerId, LocalDateTime dateTime,
+                                                                    Pageable pageable);
 
     // для WAITING
-    List<Booking> findAllByBookerIdAndStatusEqualsOrderByStartDesc(Long bookerId, BookingStatus status);
+    List<Booking> findAllByBookerIdAndStatusEqualsOrderByStartDesc(Long bookerId, BookingStatus status,
+                                                                   Pageable pageable);
 
     // для WAITING если owner
-    List<Booking> findAllByItemOwnerIdAndStatusEqualsOrderByStartDesc(Long ownerId, BookingStatus status);
+    List<Booking> findAllByItemOwnerIdAndStatusEqualsOrderByStartDesc(Long ownerId, BookingStatus status,
+                                                                      Pageable pageable);
 
     // для REJECTED
-    List<Booking> findAllByBookerIdAndStatusInOrderByStartDesc(Long bookerId, Set<BookingStatus> statusSet);
+    List<Booking> findAllByBookerIdAndStatusInOrderByStartDesc(Long bookerId, Set<BookingStatus> statusSet,
+                                                               Pageable pageable);
 
     // для REJECTED если owner
-    List<Booking> findAllByItemOwnerIdAndStatusInOrderByStartDesc(Long ownerId, Set<BookingStatus> statusSet);
+    List<Booking> findAllByItemOwnerIdAndStatusInOrderByStartDesc(Long ownerId, Set<BookingStatus> statusSet,
+                                                                  Pageable pageable);
 
     // для CURRENT
-    List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(Long bookerId, LocalDateTime now1, LocalDateTime now2);
+    List<Booking> findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(Long bookerId, LocalDateTime now1,
+                                                                             LocalDateTime now2, Pageable pageable);
 
     // для CURRENT если owner
-    List<Booking> findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(Long bookerId, LocalDateTime now1, LocalDateTime now2);
+    List<Booking> findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(Long bookerId, LocalDateTime now1,
+                                                                                LocalDateTime now2, Pageable pageable);
 
     // для PAST
-    List<Booking> findAllByBookerIdAndEndBeforeOrderByStartDesc(Long bookerId, LocalDateTime now);
+    List<Booking> findAllByBookerIdAndEndBeforeOrderByStartDesc(Long bookerId, LocalDateTime now, Pageable pageable);
 
     // для PAST если owner
-    List<Booking> findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(Long bookerId, LocalDateTime now);
+    List<Booking> findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(Long bookerId, LocalDateTime now, Pageable pageable);
 }

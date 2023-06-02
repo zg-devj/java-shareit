@@ -3,8 +3,11 @@ package ru.practicum.shareit.user;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.UserAlreadyExistException;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -12,8 +15,12 @@ import ru.practicum.shareit.user.dto.UserDto;
 import java.util.List;
 import java.util.Optional;
 
-@SpringBootTest
-class UserServiceTest {
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
@@ -21,17 +28,17 @@ class UserServiceTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-    private User user;
     private UserDto userDto;
+    private User user;
 
     @BeforeEach
     void setUp() {
-        user = User.builder()
-                .id(1L)
+        userDto = UserDto.builder()
                 .name("user")
                 .email("user@example.com")
                 .build();
-        userDto = UserDto.builder()
+
+        user = User.builder()
                 .id(1L)
                 .name("user")
                 .email("user@example.com")
@@ -40,30 +47,30 @@ class UserServiceTest {
 
     @Test
     void saveUser_Normal_ReturnUser() {
-        BDDMockito.given(userRepository.save(user)).willReturn(user);
+        when(userRepository.save(any(User.class))).thenReturn(user);
 
         UserDto added = userService.saveUser(userDto);
 
         Assertions.assertThat(added)
                 .isNotNull()
-                .usingRecursiveComparison().isEqualTo(user);
+                .usingRecursiveComparison()
+                .isEqualTo(user);
 
-        Mockito.verify(userRepository, Mockito.times(1)).save(user);
+        Mockito.verify(userRepository, Mockito.times(1)).save(any(User.class));
         Mockito.verifyNoMoreInteractions(userRepository);
     }
 
     @Test
     void saveUser_WhenEmailExists_Exception() {
-        //BDDMockito.given(userRepository.findByEmail("user@example.com")).willReturn(Optional.of(user));
-
-        BDDMockito.given(userRepository.save(user)).willThrow(UserAlreadyExistException.class);
+        when(userRepository.save(any(User.class)))
+                .thenThrow(UserAlreadyExistException.class);
 
         Throwable thrown = Assertions.catchException(() -> userService.saveUser(userDto));
 
         Assertions.assertThat(thrown)
                 .isInstanceOf(UserAlreadyExistException.class);
 
-        Mockito.verify(userRepository, Mockito.times(1)).save(user);
+        Mockito.verify(userRepository, Mockito.times(1)).save(any(User.class));
         Mockito.verifyNoMoreInteractions(userRepository);
     }
 
@@ -75,16 +82,16 @@ class UserServiceTest {
                 .email("updatedName@example.com")
                 .build();
 
-        BDDMockito.given(userRepository.canNotUpdate(1L, "updatedName@example.com")).willReturn(false);
-        BDDMockito.given(userRepository.findById(1L)).willReturn(Optional.of(user));
-        BDDMockito.given(userRepository.save(user)).willReturn(user);
+        when(userRepository.canUpdate(1L, "updatedName@example.com")).thenReturn(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
 
         UserDto updatedUser = userService.updateUser(updatedData);
 
         Assertions.assertThat(updatedUser.getEmail()).isEqualTo("updatedName@example.com");
         Assertions.assertThat(updatedUser.getName()).isEqualTo("updatedName");
 
-        Mockito.verify(userRepository, Mockito.times(1)).canNotUpdate(1L, "updatedName@example.com");
+        Mockito.verify(userRepository, Mockito.times(1)).canUpdate(1L, "updatedName@example.com");
         Mockito.verify(userRepository, Mockito.times(1)).findById(1L);
         Mockito.verify(userRepository, Mockito.times(1)).save(user);
         Mockito.verifyNoMoreInteractions(userRepository);
@@ -97,7 +104,8 @@ class UserServiceTest {
                 .name("user2")
                 .email("user@example.com")
                 .build();
-        BDDMockito.given(userRepository.canNotUpdate(2L, "user@example.com")).willReturn(true);
+        when(userRepository.canUpdate(2L, "user@example.com"))
+                .thenReturn(false);
 
         Throwable thrown = Assertions.catchException(() -> userService.updateUser(updatedData));
 
@@ -105,7 +113,7 @@ class UserServiceTest {
                 .isInstanceOf(UserAlreadyExistException.class)
                 .hasMessage("Пользователь с таким email существует.");
 
-        Mockito.verify(userRepository, Mockito.times(1)).canNotUpdate(2L, "user@example.com");
+        Mockito.verify(userRepository, Mockito.times(1)).canUpdate(2L, "user@example.com");
         Mockito.verifyNoMoreInteractions(userRepository);
     }
 
@@ -116,8 +124,8 @@ class UserServiceTest {
                 .name("updatedName")
                 .build();
 
-        BDDMockito.given(userRepository.findById(1L)).willReturn(Optional.of(user));
-        BDDMockito.given(userRepository.save(user)).willReturn(user);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
 
         UserDto updatedUser = userService.updateUser(updatedData);
 
@@ -136,16 +144,16 @@ class UserServiceTest {
                 .email("updatedName@example.com")
                 .build();
 
-        BDDMockito.given(userRepository.canNotUpdate(1L, "updatedName@example.com")).willReturn(false);
-        BDDMockito.given(userRepository.findById(1L)).willReturn(Optional.of(user));
-        BDDMockito.given(userRepository.save(user)).willReturn(user);
+        when(userRepository.canUpdate(1L, "updatedName@example.com")).thenReturn(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
 
         UserDto updatedUser = userService.updateUser(updatedData);
 
         Assertions.assertThat(updatedUser.getEmail()).isEqualTo("updatedName@example.com");
         Assertions.assertThat(updatedUser.getName()).isEqualTo("user");
 
-        Mockito.verify(userRepository, Mockito.times(1)).canNotUpdate(1L, "updatedName@example.com");
+        Mockito.verify(userRepository, Mockito.times(1)).canUpdate(1L, "updatedName@example.com");
         Mockito.verify(userRepository, Mockito.times(1)).findById(1L);
         Mockito.verify(userRepository, Mockito.times(1)).save(user);
         Mockito.verifyNoMoreInteractions(userRepository);
@@ -158,16 +166,16 @@ class UserServiceTest {
                 .email("user@example.com")
                 .build();
 
-        BDDMockito.given(userRepository.canNotUpdate(1L, "user@example.com")).willReturn(false);
-        BDDMockito.given(userRepository.findById(1L)).willReturn(Optional.of(user));
-        BDDMockito.given(userRepository.save(user)).willReturn(user);
+        when(userRepository.canUpdate(1L, "user@example.com")).thenReturn(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
 
         UserDto returnedUser = userService.updateUser(updatedData);
 
         Assertions.assertThat(returnedUser.getEmail()).isEqualTo("user@example.com");
         Assertions.assertThat(returnedUser.getName()).isEqualTo("user");
 
-        Mockito.verify(userRepository, Mockito.times(1)).canNotUpdate(1L, "user@example.com");
+        Mockito.verify(userRepository, Mockito.times(1)).canUpdate(1L, "user@example.com");
         Mockito.verify(userRepository, Mockito.times(1)).findById(1L);
         Mockito.verify(userRepository, Mockito.times(1)).save(user);
         Mockito.verifyNoMoreInteractions(userRepository);
@@ -175,7 +183,7 @@ class UserServiceTest {
 
     @Test
     void findUserById_Normal_ReturnUser() {
-        BDDMockito.given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         UserDto actual = userService.findUserById(1L);
 
@@ -188,13 +196,13 @@ class UserServiceTest {
 
     @Test
     void findUserById_WrongId_NotFoundException() {
-        BDDMockito.given(userRepository.findById(999L)).willReturn(Optional.empty());
+        when(userRepository.findById(999L)).thenReturn(Optional.empty());
 
         Throwable thrown = Assertions.catchException(() -> userService.findUserById(999L));
 
         Assertions.assertThat(thrown)
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage(String.format("Пользователь c id=%d не найден", 999L));
+                .hasMessage(String.format("Пользователь c id=%d не найден.", 999L));
 
         Mockito.verify(userRepository, Mockito.times(1)).findById(999L);
         Mockito.verifyNoMoreInteractions(userRepository);
@@ -202,11 +210,11 @@ class UserServiceTest {
 
     @Test
     void deleteUser_Normal() {
-        BDDMockito.willDoNothing().given(userRepository).deleteById(ArgumentMatchers.anyLong());
+        Mockito.doNothing().when(userRepository).deleteById(anyLong());
 
-        userService.deleteUser(ArgumentMatchers.anyLong());
+        userService.deleteUser(anyLong());
 
-        Mockito.verify(userRepository, Mockito.times(1)).deleteById(ArgumentMatchers.anyLong());
+        Mockito.verify(userRepository, Mockito.times(1)).deleteById(anyLong());
         Mockito.verifyNoMoreInteractions(userRepository);
     }
 
@@ -217,7 +225,7 @@ class UserServiceTest {
                 .name("user2")
                 .email("user2@example.com")
                 .build();
-        BDDMockito.given(userRepository.findAll()).willReturn(List.of(user, user2));
+        when(userRepository.findAll()).thenReturn(List.of(user, user2));
 
         List<UserDto> users = userService.findAllUsers();
 

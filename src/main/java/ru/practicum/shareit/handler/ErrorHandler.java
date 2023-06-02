@@ -43,7 +43,7 @@ public class ErrorHandler {
         return new ErrorMessage(e.getMessage());
     }
 
-    //500
+    // 500
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorMessage handlerException(final RuntimeException e) {

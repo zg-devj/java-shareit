@@ -1,14 +1,14 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@Getter
+@Data
 @Builder(toBuilder = true)
 public class ItemDto {
     @Setter
@@ -19,9 +19,12 @@ public class ItemDto {
     private String name;
 
     @NotBlank(message = "Описание не может быть пустым или отсутствовать.")
-    @Size(max = 200, message = "Описание не должна быть больше 200 символов.")
+    @Size(max = 255, message = "Описание не должна быть больше 255 символов.")
     private String description;
 
     @NotNull(message = "Одобрение должно быть указано.")
     private Boolean available;
+
+    private Long requestId;
+
 }

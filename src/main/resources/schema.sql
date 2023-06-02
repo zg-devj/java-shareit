@@ -1,4 +1,5 @@
 -- для тестирования
+-- drop table if exists requests;
 -- drop table if exists comments;
 -- drop table if exists bookings;
 -- drop table if exists items;
@@ -48,4 +49,14 @@ create table if not exists comments
     constraint pk_comments primary key (id),
     constraint fk_comments_items foreign key (item_id) references items (id),
     constraint fk_comments_users foreign key (author_id) references users (id)
+);
+
+create table if not exists requests
+(
+    id        bigint generated always as identity,
+    description varchar (512),
+    requestor_id bigint       not null,
+    created   timestamp without time zone,
+    constraint pk_requests primary key (id),
+    constraint fk_requests_users foreign key (requestor_id) references users (id)
 );

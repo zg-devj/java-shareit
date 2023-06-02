@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,12 +9,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import java.util.Arrays;
 import java.util.List;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = UserController.class)
 class UserControllerTest {
@@ -27,87 +29,102 @@ class UserControllerTest {
     @MockBean
     private UserService userService;
 
+    UserDto user;
+
+    @BeforeEach
+    void setUp() {
+        user = UserDto.builder()
+                .id(1L)
+                .name("user")
+                .email("user@example.com")
+                .build();
+    }
+
     @Test
     void createUser_Normal_Return201() throws Exception {
-        UserDto user = getNormalUser();
-
         Mockito.when(userService.saveUser(user)).thenReturn(user);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+        mockMvc.perform(post("/users")
                         .content(objectMapper.writeValueAsString(user))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                 )
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("user"));
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").isNumber())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.name").value("user"));
     }
 
     @Test
     void createUser_EmptyName_ReturnBadRequest() throws Exception {
-        User user = User.builder()
-                .id(1L)
-                .name("")
-                .email("user@example.com")
-                .build();
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+        user.setName("");
+
+        mockMvc.perform(post("/users")
                 .content(objectMapper.writeValueAsString(user))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-        ).andExpect(MockMvcResultMatchers.status().isBadRequest());
+        ).andExpect(status().isBadRequest());
     }
 
     @Test
     void createUser_WrongEmail_ReturnBadRequest() throws Exception {
-        UserDto user = UserDto.builder()
-                .id(1L)
-                .name("user")
-                .email("example.com")
-                .build();
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+        user.setEmail("example.com");
+
+        mockMvc.perform(post("/users")
                 .content(objectMapper.writeValueAsString(user))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-        ).andExpect(MockMvcResultMatchers.status().isBadRequest());
+        ).andExpect(status().isBadRequest());
     }
 
     @Test
     void updateUser_Normal() throws Exception {
+        user.setEmail("user@example.com");
+        user.setName("updatedUser");
+
         UserDto userUpdated = UserDto.builder()
                 .id(1L)
                 .name("updatedUser")
                 .email("user@example.com")
                 .build();
-        Mockito.when(userService.updateUser(userUpdated))
+
+        Mockito.when(userService.updateUser(user))
                 .thenReturn(userUpdated);
-        mockMvc.perform(MockMvcRequestBuilders.patch("/users/{id}", 1L)
-                .content(objectMapper.writeValueAsString(userUpdated))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-        ).andExpect(MockMvcResultMatchers.status().isOk());
+
+        mockMvc.perform(patch("/users/{id}", 1L)
+                        .content(objectMapper.writeValueAsString(user))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNumber())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.name").value("updatedUser"))
+                .andExpect(jsonPath("$.email").value("user@example.com"));
     }
 
     @Test
     void get_FindById_Noraml() throws Exception {
-        UserDto user = getNormalUser();
-
         Mockito.when(userService.findUserById(1L)).thenReturn(user);
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/{id}", 1L)
+
+        mockMvc.perform(get("/users/{id}", 1L)
                         .content(objectMapper.writeValueAsString(user))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                ).andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").isNumber())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("user"));
+                ).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").isNumber())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.name").value("user"))
+                .andExpect(jsonPath("$.email").value("user@example.com"));
     }
 
     @Test
     void delete_Normal() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/users/{id}", 1L)
+        mockMvc.perform(delete("/users/{id}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-        ).andExpect(MockMvcResultMatchers.status().isNoContent());
+        ).andExpect(status().isNoContent());
     }
 
     @Test
@@ -128,19 +145,11 @@ class UserControllerTest {
 
         Mockito.when(userService.findAllUsers()).thenReturn(userList);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/users")
+        mockMvc.perform(get("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                ).andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content()
-                        .json(objectMapper.writeValueAsString(Arrays.asList(user1, user2))));
-    }
-
-    private UserDto getNormalUser() {
-        return UserDto.builder()
-                .id(1L)
-                .name("user")
-                .email("user@example.com")
-                .build();
+                ).andExpect(status().isOk())
+                .andExpect(content()
+                        .json(objectMapper.writeValueAsString(List.of(user1, user2))));
     }
 }
