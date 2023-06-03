@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.exceptions.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
@@ -23,11 +26,16 @@ public class ErrorHandler {
     // 400
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorMessage handlerValidateException(final MethodArgumentNotValidException e) {
+    public List<ErrorMessageField> handlerValidateException(final MethodArgumentNotValidException e) {
         log.warn(e.getMessage());
-        StringBuilder builder = new StringBuilder();
-        e.getBindingResult().getFieldErrors().forEach(fieldError -> builder.append(fieldError.getDefaultMessage()));
-        return new ErrorMessage(builder.toString());
+        List<ErrorMessageField> errors = new ArrayList<>();
+        //StringBuilder builder = new StringBuilder();
+        e.getBindingResult().getFieldErrors().forEach(
+                fieldError -> {
+                    errors.add(new ErrorMessageField(fieldError.getField(), fieldError.getDefaultMessage()));
+                    //builder.append();
+                });
+        return errors;
     }
 
     // 403
