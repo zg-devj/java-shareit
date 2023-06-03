@@ -23,3 +23,4 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             " or upper(i.description) like upper(concat('%', ?1, '%')))")
     List<Item> search(String text, Pageable pageable);
 }
+

@@ -12,12 +12,12 @@ import javax.validation.constraints.Size;
 public class UserDto {
     private Long id;
 
-    @NotBlank(message = "Имя не может быть пустым или отсутствовать.")
-    @Size(max = 50, message = "Имя не должна быть больше 50 символов.")
+    @NotBlank
+    @Size(max = 50)
     private String name;
 
-    @NotBlank(message = "Email не может быть пустым или отсутствовать.")
-    @Email(message = "Некорректный адрес электронной почты")
-    @Size(max = 512, message = "Email не должна быть больше 512 символов.")
+    @NotBlank
+    @Email
+    @Size(max = 512)
     private String email;
 }

@@ -14,17 +14,16 @@ public class ItemDto {
     @Setter
     private Long id;
 
-    @NotBlank(message = "Название не может быть пустым или отсутствовать.")
-    @Size(max = 100, message = "Название не должна быть больше 100 символов.")
+    @NotBlank
+    @Size(max = 100)
     private String name;
 
-    @NotBlank(message = "Описание не может быть пустым или отсутствовать.")
-    @Size(max = 255, message = "Описание не должна быть больше 255 символов.")
+    @NotBlank
+    @Size(max = 255)
     private String description;
 
-    @NotNull(message = "Одобрение должно быть указано.")
+    @NotNull
     private Boolean available;
 
     private Long requestId;
-
 }
