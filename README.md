@@ -23,3 +23,4 @@
 - [x] Добавил ExceptionHandler для Validation.
 - [x] Тесты с несколькими проверками разделены на более мелкие.
 - [x] Изменен класс вывода сообщения об ошибке.
+- [x] Исправлен тест ItemRequestIntegrationTest c bidirectional отношением.

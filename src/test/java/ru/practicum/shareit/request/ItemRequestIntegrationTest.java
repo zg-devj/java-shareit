@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.User;
 
@@ -29,6 +30,8 @@ public class ItemRequestIntegrationTest {
     private User user;
     private ItemRequest request;
     private ItemRequest request2;
+    private Item item;
+    private Item item2;
 
     private final LocalDateTime now = LocalDateTime.now();
 
@@ -91,8 +94,8 @@ public class ItemRequestIntegrationTest {
         // when
         ItemRequestDto itemRequestDto = itemRequestService.getItemRequest(user.getId(), request.getId());
 
-
-        String query = "select ir from ItemRequest as ir where ir.id=:id";
+        String query = "select ir from ItemRequest as ir " +
+                "where ir.id=:id";
         ItemRequest result = em.createQuery(query, ItemRequest.class)
                 .setParameter("id", itemRequestDto.getId())
                 .getSingleResult();
@@ -101,7 +104,8 @@ public class ItemRequestIntegrationTest {
         assertThat(itemRequestDto.getCreated(), is(now.minusHours(3)));
         assertThat(itemRequestDto.getDescription(), is(request.getDescription()));
         assertThat(result.getRequestor(), is(user));
-        assertThat(result.getItems(), nullValue());
+        assertThat(result.getItems(), allOf(hasSize(2)));
+        assertThat(result.getItems(), contains(item, item2));
     }
 
     private void init() {
@@ -127,5 +131,25 @@ public class ItemRequestIntegrationTest {
                 .requestor(user)
                 .build();
         em.persist(request2);
+        item = Item.builder()
+                .owner(owner)
+                .request(request)
+                .name("стремянка алюминиевая")
+                .description("3 м")
+                .available(true)
+                .build();
+        em.persist(item);
+        // обновляем связи
+        em.refresh(request);
+
+        item2 = Item.builder()
+                .owner(owner)
+                .request(request)
+                .name("стремянка железная")
+                .description("2 м")
+                .available(true)
+                .build();
+        em.persist(item2);
+        em.refresh(request);
     }
 }
