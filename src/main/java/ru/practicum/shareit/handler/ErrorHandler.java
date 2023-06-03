@@ -26,9 +26,7 @@ public class ErrorHandler {
     public ErrorMessage handlerValidateException(final MethodArgumentNotValidException e) {
         log.warn(e.getMessage());
         StringBuilder builder = new StringBuilder();
-        e.getBindingResult().getFieldErrors().forEach(fieldError -> {
-            builder.append(fieldError.getDefaultMessage());
-        });
+        e.getBindingResult().getFieldErrors().forEach(fieldError -> builder.append(fieldError.getDefaultMessage()));
         return new ErrorMessage(builder.toString());
     }
 

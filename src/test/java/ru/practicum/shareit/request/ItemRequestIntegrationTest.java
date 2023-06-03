@@ -39,7 +39,6 @@ public class ItemRequestIntegrationTest {
 
     @Test
     void saveItemRequest_Normal() {
-
         ItemRequestDto requestDto = ItemRequestDto.builder()
                 .description("стул")
                 .build();
@@ -89,8 +88,6 @@ public class ItemRequestIntegrationTest {
 
     @Test
     void getItemRequest_Normal() {
-        // given
-
         // when
         ItemRequestDto itemRequestDto = itemRequestService.getItemRequest(user.getId(), request.getId());
 

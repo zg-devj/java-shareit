@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -18,21 +19,36 @@ class ItemRepositoryTest {
     private final TestEntityManager tem;
     private final ItemRepository itemRepository;
 
-    @Test
-    void test_search_findTwoItems() {
+    User user;
+    Item item1;
+    Item item2;
+    Item item3;
+    Item item4;
 
-        User user = User.builder().name("user").email("user@example.com").build();
+
+    @BeforeEach
+    void setUp() {
+        init();
+    }
+
+    private void init() {
+        user = User.builder().name("user").email("user@example.com").build();
         tem.persist(user);
-        Item item1 = Item.builder().name("стул").description("отличный")
+        item1 = Item.builder().name("стул").description("отличный")
                 .owner(user).available(true).build();
         tem.persist(item1);
-        Item item2 = Item.builder().name("табурет").description("лучше стула")
+        item2 = Item.builder().name("табурет").description("лучше стула")
                 .owner(user).available(true).build();
         tem.persist(item2);
-        Item item3 = Item.builder().name("табурет").description("мягкий")
+        item3 = Item.builder().name("табурет").description("мягкий")
                 .owner(user).available(false).build();
         tem.persist(item3);
+        item4 = Item.builder().name("дрель").description("быстрая")
+                .owner(user).available(false).build();
+    }
 
+    @Test
+    void test_search_findTwoItems() {
         PageRequest pageRequest = PageRequest.of(0, 20);
 
         List<Item> result1 = itemRepository.search("стул", pageRequest);
@@ -45,19 +61,6 @@ class ItemRepositoryTest {
 
     @Test
     void test_search_findOneItem() {
-
-        User user = User.builder().name("user").email("user@example.com").build();
-        tem.persist(user);
-        Item item1 = Item.builder().name("стул").description("отличный")
-                .owner(user).available(true).build();
-        tem.persist(item1);
-        Item item2 = Item.builder().name("табурет").description("лучше стула")
-                .owner(user).available(true).build();
-        tem.persist(item2);
-        Item item3 = Item.builder().name("табурет").description("мягкий")
-                .owner(user).available(false).build();
-        tem.persist(item3);
-
         PageRequest pageRequest = PageRequest.of(0, 20);
 
         // находит табурет с available true
@@ -71,18 +74,6 @@ class ItemRepositoryTest {
 
     @Test
     void test_search_NoFoundItems() {
-        User user = User.builder().name("user").email("user@example.com").build();
-        tem.persist(user);
-        Item item1 = Item.builder().name("стул").description("отличный")
-                .owner(user).available(true).build();
-        tem.persist(item1);
-        Item item2 = Item.builder().name("табурет").description("лучше стула")
-                .owner(user).available(true).build();
-        tem.persist(item2);
-        Item item3 = Item.builder().name("дрель").description("быстрая")
-                .owner(user).available(false).build();
-        tem.persist(item3);
-
         PageRequest pageRequest = PageRequest.of(0, 20);
 
         List<Item> result2 = itemRepository.search("дрель", pageRequest);
@@ -91,18 +82,6 @@ class ItemRepositoryTest {
 
     @Test
     void test_search_EmptySearchText() {
-        User user = User.builder().name("user").email("user@example.com").build();
-        tem.persist(user);
-        Item item1 = Item.builder().name("стул").description("отличный")
-                .owner(user).available(true).build();
-        tem.persist(item1);
-        Item item2 = Item.builder().name("табурет").description("лучше стула")
-                .owner(user).available(true).build();
-        tem.persist(item2);
-        Item item3 = Item.builder().name("стол").description("мягкий")
-                .owner(user).available(false).build();
-        tem.persist(item3);
-
         PageRequest pageRequest = PageRequest.of(0, 20);
 
         List<Item> result2 = itemRepository.search("", pageRequest);

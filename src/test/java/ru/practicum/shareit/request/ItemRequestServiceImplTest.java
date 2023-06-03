@@ -95,7 +95,6 @@ class ItemRequestServiceImplTest {
 
     @Test
     void findAllByRequestor_Normal() {
-
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
         Mockito.when(itemRequestRepository.findAllByRequestorId(1L)).thenReturn(List.of(savedItemRequest));
 

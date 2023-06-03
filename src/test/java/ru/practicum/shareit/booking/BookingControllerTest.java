@@ -143,28 +143,14 @@ class BookingControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(List.of(bookingDto))));
     }
 
-//    @Test
-//    void getAll_WrongState_ReturnBadRequest() throws Exception {
-//        ErrorMessage message = new ErrorMessage("Unknown state: UNSUPPORTED");
-//
-//        mockMvc.perform(get("/bookings")
-//                        .header("X-Sharer-User-Id", 1L)
-//                        .param("state","UNSUPPORTED")
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(content().json(mapper.writeValueAsString(message)));
-//    }
-
     @Test
     void getAll_WrongFromSize_ReturnBadRequest() throws Exception {
         ErrorMessage message = new ErrorMessage("Не верный запрос для постраничного вывода.");
 
         mockMvc.perform(get("/bookings")
                         .header("X-Sharer-User-Id", 1L)
-                        .param("from","0")
-                        .param("size","0")
+                        .param("from", "0")
+                        .param("size", "0")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -187,28 +173,14 @@ class BookingControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(List.of(bookingDto))));
     }
 
-//    @Test
-//    void geOwnerAll_WrongState_ReturnBadRequest() throws Exception {
-//        ErrorMessage message = new ErrorMessage("Unknown state: UNSUPPORTED");
-//
-//        mockMvc.perform(get("/bookings/owner")
-//                        .header("X-Sharer-User-Id", 1L)
-//                        .param("state","UNSUPPORTED")
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(content().json(mapper.writeValueAsString(message)));
-//    }
-
     @Test
     void geOwnerAll_WrongFromSize_ReturnBadRequest() throws Exception {
         ErrorMessage message = new ErrorMessage("Не верный запрос для постраничного вывода.");
 
         mockMvc.perform(get("/bookings/owner")
                         .header("X-Sharer-User-Id", 1L)
-                        .param("from","0")
-                        .param("size","0")
+                        .param("from", "0")
+                        .param("size", "0")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

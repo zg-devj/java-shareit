@@ -277,42 +277,77 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookings_Normal_Stateless() {
+    void getAllBookings_Normal_All() {
         when(userRepository.existsById(anyLong()))
                 .thenReturn(true);
 
         when(bookingRepoitory.findAllByBookerIdOrderByStartDesc(anyLong(), any(PageRequest.class)))
                 .thenReturn(List.of(booking));
-        when(bookingRepoitory.findAllByBookerIdAndStartAfterOrderByStartDesc(anyLong(),
-                any(LocalDateTime.class), any(PageRequest.class)))
-                .thenReturn(List.of(booking));
-        when(bookingRepoitory.findAllByBookerIdAndEndBeforeOrderByStartDesc(anyLong(),
-                any(LocalDateTime.class), any(PageRequest.class)))
-                .thenReturn(List.of(booking));
-        when(bookingRepoitory.findAllByBookerIdAndStatusInOrderByStartDesc(anyLong(),
-                anySet(), any(PageRequest.class)))
-                .thenReturn(List.of(booking));
-        when(bookingRepoitory.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(anyLong(),
-                any(LocalDateTime.class), any(LocalDateTime.class), any(PageRequest.class)))
-                .thenReturn(List.of(booking));
-        when(bookingRepoitory.findAllByBookerIdAndStatusEqualsOrderByStartDesc(anyLong(),
-                any(BookingStatus.class), any(PageRequest.class)))
-                .thenReturn(List.of(booking));
 
         List<BookingDto> listAll = bookingService.getAllBookings(1L, "ALL", 0, 20);
         Assertions.assertThat(listAll).hasSize(1);
+    }
+
+    @Test
+    void getAllBookings_Normal_Future() {
+        when(userRepository.existsById(anyLong()))
+                .thenReturn(true);
+
+        when(bookingRepoitory.findAllByBookerIdAndStartAfterOrderByStartDesc(anyLong(),
+                any(LocalDateTime.class), any(PageRequest.class)))
+                .thenReturn(List.of(booking));
 
         List<BookingDto> listFuture = bookingService.getAllBookings(1L, "FUTURE", 0, 20);
         Assertions.assertThat(listFuture).hasSize(1);
+    }
+
+    @Test
+    void getAllBookings_Normal_Past() {
+        when(userRepository.existsById(anyLong()))
+                .thenReturn(true);
+
+        when(bookingRepoitory.findAllByBookerIdAndEndBeforeOrderByStartDesc(anyLong(),
+                any(LocalDateTime.class), any(PageRequest.class)))
+                .thenReturn(List.of(booking));
 
         List<BookingDto> listPast = bookingService.getAllBookings(1L, "PAST", 0, 20);
         Assertions.assertThat(listPast).hasSize(1);
+    }
+
+    @Test
+    void getAllBookings_Normal_Rejected() {
+        when(userRepository.existsById(anyLong()))
+                .thenReturn(true);
+
+        when(bookingRepoitory.findAllByBookerIdAndStatusInOrderByStartDesc(anyLong(),
+                anySet(), any(PageRequest.class)))
+                .thenReturn(List.of(booking));
 
         List<BookingDto> listReject = bookingService.getAllBookings(1L, "REJECTED", 0, 20);
         Assertions.assertThat(listReject).hasSize(1);
+    }
+
+    @Test
+    void getAllBookings_Normal_Current() {
+        when(userRepository.existsById(anyLong()))
+                .thenReturn(true);
+
+        when(bookingRepoitory.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(anyLong(),
+                any(LocalDateTime.class), any(LocalDateTime.class), any(PageRequest.class)))
+                .thenReturn(List.of(booking));
 
         List<BookingDto> listCurrent = bookingService.getAllBookings(1L, "CURRENT", 0, 20);
         Assertions.assertThat(listCurrent).hasSize(1);
+    }
+
+    @Test
+    void getAllBookings_Normal_Waiting() {
+        when(userRepository.existsById(anyLong()))
+                .thenReturn(true);
+
+        when(bookingRepoitory.findAllByBookerIdAndStatusEqualsOrderByStartDesc(anyLong(),
+                any(BookingStatus.class), any(PageRequest.class)))
+                .thenReturn(List.of(booking));
 
         List<BookingDto> listWaiting = bookingService.getAllBookings(1L, "WAITING", 0, 20);
         Assertions.assertThat(listWaiting).hasSize(1);
@@ -332,42 +367,77 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingsForOwner_Normal_Stateless() {
+    void getAllBookingsForOwner_Normal_ALL() {
         when(userRepository.existsById(anyLong()))
                 .thenReturn(true);
 
         when(bookingRepoitory.findAllByItemOwnerIdOrderByStartDesc(anyLong(), any(PageRequest.class)))
                 .thenReturn(List.of(booking));
-        when(bookingRepoitory.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(anyLong(),
-                any(LocalDateTime.class), any(PageRequest.class)))
-                .thenReturn(List.of(booking));
-        when(bookingRepoitory.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(anyLong(),
-                any(LocalDateTime.class), any(PageRequest.class)))
-                .thenReturn(List.of(booking));
-        when(bookingRepoitory.findAllByItemOwnerIdAndStatusInOrderByStartDesc(anyLong(),
-                anySet(), any(PageRequest.class)))
-                .thenReturn(List.of(booking));
-        when(bookingRepoitory.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(anyLong(),
-                any(LocalDateTime.class), any(LocalDateTime.class), any(PageRequest.class)))
-                .thenReturn(List.of(booking));
-        when(bookingRepoitory.findAllByItemOwnerIdAndStatusEqualsOrderByStartDesc(anyLong(),
-                any(BookingStatus.class), any(PageRequest.class)))
-                .thenReturn(List.of(booking));
 
         List<BookingDto> listAll = bookingService.getAllBookingsForOwner(1L, "ALL", 0, 20);
         Assertions.assertThat(listAll).hasSize(1);
+    }
+
+    @Test
+    void getAllBookingsForOwner_Normal_Future() {
+        when(userRepository.existsById(anyLong()))
+                .thenReturn(true);
+
+        when(bookingRepoitory.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(anyLong(),
+                any(LocalDateTime.class), any(PageRequest.class)))
+                .thenReturn(List.of(booking));
 
         List<BookingDto> listFuture = bookingService.getAllBookingsForOwner(1L, "FUTURE", 0, 20);
         Assertions.assertThat(listFuture).hasSize(1);
+    }
+
+    @Test
+    void getAllBookingsForOwner_Normal_Past() {
+        when(userRepository.existsById(anyLong()))
+                .thenReturn(true);
+
+        when(bookingRepoitory.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(anyLong(),
+                any(LocalDateTime.class), any(PageRequest.class)))
+                .thenReturn(List.of(booking));
 
         List<BookingDto> listPast = bookingService.getAllBookingsForOwner(1L, "PAST", 0, 20);
         Assertions.assertThat(listPast).hasSize(1);
+    }
+
+    @Test
+    void getAllBookingsForOwner_Normal_Rejected() {
+        when(userRepository.existsById(anyLong()))
+                .thenReturn(true);
+
+        when(bookingRepoitory.findAllByItemOwnerIdAndStatusInOrderByStartDesc(anyLong(),
+                anySet(), any(PageRequest.class)))
+                .thenReturn(List.of(booking));
 
         List<BookingDto> listReject = bookingService.getAllBookingsForOwner(1L, "REJECTED", 0, 20);
         Assertions.assertThat(listReject).hasSize(1);
+    }
+
+    @Test
+    void getAllBookingsForOwner_Normal_Current() {
+        when(userRepository.existsById(anyLong()))
+                .thenReturn(true);
+
+        when(bookingRepoitory.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(anyLong(),
+                any(LocalDateTime.class), any(LocalDateTime.class), any(PageRequest.class)))
+                .thenReturn(List.of(booking));
 
         List<BookingDto> listCurrent = bookingService.getAllBookingsForOwner(1L, "CURRENT", 0, 20);
         Assertions.assertThat(listCurrent).hasSize(1);
+    }
+
+    @Test
+    void getAllBookingsForOwner_Normal_Waiting() {
+        when(userRepository.existsById(anyLong()))
+                .thenReturn(true);
+
+        when(bookingRepoitory.findAllByItemOwnerIdAndStatusEqualsOrderByStartDesc(anyLong(),
+                any(BookingStatus.class), any(PageRequest.class)))
+                .thenReturn(List.of(booking));
 
         List<BookingDto> listWaiting = bookingService.getAllBookingsForOwner(1L, "WAITING", 0, 20);
         Assertions.assertThat(listWaiting).hasSize(1);
