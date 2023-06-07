@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 
 @ExtendWith(MockitoExtension.class)
 class ItemRequestServiceImplTest {
@@ -29,6 +31,9 @@ class ItemRequestServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private ItemRepository itemRepository;
 
     @InjectMocks
     private ItemRequestServiceImpl service;
@@ -97,6 +102,7 @@ class ItemRequestServiceImplTest {
     void findAllByRequestor_Normal() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
         Mockito.when(itemRequestRepository.findAllByRequestorId(1L)).thenReturn(List.of(savedItemRequest));
+        Mockito.when(itemRepository.findAllByRequestIsIn(anyList())).thenReturn(new ArrayList<>());
 
         List<ItemRequestDto> returned = service.findAllByRequestor(1L);
 
@@ -107,7 +113,8 @@ class ItemRequestServiceImplTest {
 
         Mockito.verify(userRepository, Mockito.times(1)).existsById(1L);
         Mockito.verify(itemRequestRepository, Mockito.times(1)).findAllByRequestorId(1L);
-        Mockito.verifyNoMoreInteractions(userRepository, itemRequestRepository);
+        Mockito.verify(itemRepository, Mockito.times(1)).findAllByRequestIsIn(anyList());
+        Mockito.verifyNoMoreInteractions(userRepository, itemRequestRepository, itemRepository);
     }
 
     @Test
@@ -131,6 +138,7 @@ class ItemRequestServiceImplTest {
         PageRequest pageRequest = PageRequest.of(0, 20);
         Mockito.when(itemRequestRepository.findAllByRequestorIdNotOrderByCreatedDesc(1L, pageRequest))
                 .thenReturn(List.of(savedItemRequest));
+        Mockito.when(itemRepository.findAllByRequestIsIn(anyList())).thenReturn(new ArrayList<>());
 
         List<ItemRequestDto> retuned = service.findItemRequests(1L, 0, 20);
 
@@ -140,7 +148,8 @@ class ItemRequestServiceImplTest {
 
         Mockito.verify(itemRequestRepository, Mockito.times(1))
                 .findAllByRequestorIdNotOrderByCreatedDesc(1L, pageRequest);
-        Mockito.verifyNoMoreInteractions(itemRequestRepository);
+        Mockito.verify(itemRepository, Mockito.times(1)).findAllByRequestIsIn(anyList());
+        Mockito.verifyNoMoreInteractions(itemRequestRepository, itemRepository);
     }
 
     @Test
