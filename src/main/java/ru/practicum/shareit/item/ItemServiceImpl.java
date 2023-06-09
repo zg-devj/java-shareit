@@ -24,8 +24,10 @@ import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -126,18 +128,24 @@ public class ItemServiceImpl implements ItemService {
                 comments);
     }
 
-    // Вернуть вещи владельца с сомментариями
+    // Вернуть вещи владельца с комментариями
     @Override
     public List<ItemBookingDto> findAllByUserId(Long userId, int from, int size) {
         int page = from / size;
         PageRequest pageRequest = PageRequest.of(page, size);
         List<ItemBookingDto> returned = new ArrayList<>();
         List<Item> items = itemRepository.findAllByOwnerIdOrderByIdAsc(userId, pageRequest);
+        List<Comment> comments = commentRepository.findCommentsByItemIsIn(items);
         for (Item item : items) {
-            List<Comment> comments = commentRepository.findCommentsByItemIdOrderByCreatedAsc(item.getId());
+            // TODO: 09.06.2023 DELETE
+            //List<Comment> comments1 = commentRepository.findCommentsByItemIdOrderByCreatedAsc(item.getId());
+            List<Comment> comments1 = comments.stream()
+                    .filter(c-> Objects.equals(c.getItem().getId(), item.getId()))
+                    .sorted(Comparator.comparing(Comment::getCreated))
+                    .collect(Collectors.toList());
             BookingShort last = getLastBooking(item.getId(), userId);
             BookingShort next = getNextBooking(item.getId(), userId);
-            returned.add(ItemMapper.toItemBookingDto(item, last, next, comments));
+            returned.add(ItemMapper.toItemBookingDto(item, last, next, comments1));
         }
         return returned;
     }

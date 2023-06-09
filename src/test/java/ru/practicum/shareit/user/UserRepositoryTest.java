@@ -14,7 +14,6 @@ import java.sql.SQLException;
 
 @DataJpaTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@ActiveProfiles("test")
 class UserRepositoryTest {
     private final UserRepository userRepository;
     private final TestEntityManager tem;
