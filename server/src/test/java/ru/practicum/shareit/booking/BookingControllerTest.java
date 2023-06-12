@@ -143,20 +143,21 @@ class BookingControllerTest {
                 .andExpect(content().json(mapper.writeValueAsString(List.of(bookingDto))));
     }
 
-    @Test
-    void getAll_WrongFromSize_ReturnBadRequest() throws Exception {
-        ErrorMessage message = new ErrorMessage("Не верный запрос для постраничного вывода.");
-
-        mockMvc.perform(get("/bookings")
-                        .header("X-Sharer-User-Id", 1L)
-                        .param("from", "0")
-                        .param("size", "0")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().json(mapper.writeValueAsString(message)));
-    }
+    // TODO: 12.06.2023 DELETE
+//    @Test
+//    void getAll_WrongFromSize_ReturnBadRequest() throws Exception {
+//        ErrorMessage message = new ErrorMessage("Не верный запрос для постраничного вывода.");
+//
+//        mockMvc.perform(get("/bookings")
+//                        .header("X-Sharer-User-Id", 1L)
+//                        .param("from", "0")
+//                        .param("size", "0")
+//                        .characterEncoding(StandardCharsets.UTF_8)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isBadRequest())
+//                .andExpect(content().json(mapper.writeValueAsString(message)));
+//    }
 
     @Test
     void geOwnerAll_Normal() throws Exception {
@@ -172,19 +173,19 @@ class BookingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(List.of(bookingDto))));
     }
-
-    @Test
-    void geOwnerAll_WrongFromSize_ReturnBadRequest() throws Exception {
-        ErrorMessage message = new ErrorMessage("Не верный запрос для постраничного вывода.");
-
-        mockMvc.perform(get("/bookings/owner")
-                        .header("X-Sharer-User-Id", 1L)
-                        .param("from", "0")
-                        .param("size", "0")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().json(mapper.writeValueAsString(message)));
-    }
+    // TODO: 12.06.2023 DELETE
+//    @Test
+//    void geOwnerAll_WrongFromSize_ReturnBadRequest() throws Exception {
+//        ErrorMessage message = new ErrorMessage("Не верный запрос для постраничного вывода.");
+//
+//        mockMvc.perform(get("/bookings/owner")
+//                        .header("X-Sharer-User-Id", 1L)
+//                        .param("from", "0")
+//                        .param("size", "0")
+//                        .characterEncoding(StandardCharsets.UTF_8)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isBadRequest())
+//                .andExpect(content().json(mapper.writeValueAsString(message)));
+//    }
 }

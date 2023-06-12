@@ -6,9 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingNewDto;
-import ru.practicum.shareit.utils.Utils;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -23,7 +21,7 @@ public class BookingController {
     @ResponseStatus(HttpStatus.CREATED)
     public BookingDto create(
             @RequestHeader(value = "X-Sharer-User-Id") Long userId,
-            @RequestBody @Valid BookingNewDto bookingNewDto
+            @RequestBody BookingNewDto bookingNewDto
     ) {
         log.info("POST /bookings - создание бронирования пользователем {}.", userId);
         return bookingService.createBooking(userId, bookingNewDto);
@@ -55,8 +53,6 @@ public class BookingController {
             @RequestParam(defaultValue = "0") int from,
             @RequestParam(defaultValue = "20") int size
     ) {
-        Utils.checkPaging(from, size);
-
         log.info("GET /bookings - все бронирования.");
         return bookingService.getAllBookings(userId, state, from, size);
     }
@@ -68,8 +64,6 @@ public class BookingController {
             @RequestParam(defaultValue = "0") int from,
             @RequestParam(defaultValue = "20") int size
     ) {
-        Utils.checkPaging(from, size);
-
         log.info("GET /bookings/owner - все бронирования владельца.");
         return bookingService.getAllBookingsForOwner(userId, state, from, size);
     }

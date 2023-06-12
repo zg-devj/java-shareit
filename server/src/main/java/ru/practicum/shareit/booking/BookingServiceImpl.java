@@ -33,7 +33,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDto createBooking(Long userId, BookingNewDto bookingNewDto) {
-        validDateForBookingNewDto(bookingNewDto);
+        // TODO: 12.06.2023 DELETE
+//        validDateForBookingNewDto(bookingNewDto);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(
@@ -166,32 +167,6 @@ public class BookingServiceImpl implements BookingService {
     private void checkUser(long userId) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException(String.format("Пользователь c id=%d не найден.", userId));
-        }
-    }
-
-    // Проверка бронирования
-    private void validDateForBookingNewDto(BookingNewDto bookingNewDto) {
-        if (bookingNewDto.getStart() == null) {
-            throw new BadRequestException("Дата начала бронирования должны быть указано.");
-        }
-        if (bookingNewDto.getEnd() == null) {
-            throw new BadRequestException("Дата окончания бронирования должны быть указано.");
-        }
-        if (bookingNewDto.getStart().isEqual(bookingNewDto.getEnd())) {
-            throw new BadRequestException("Дата начала бронирования не должна совпадать " +
-                    "с датой окончания бронирования.");
-        }
-        if (bookingNewDto.getStart().isBefore(LocalDateTime.now())) {
-            throw new BadRequestException("Дата начала бронирования не должна быть " +
-                    "в прошлом.");
-        }
-        if (bookingNewDto.getEnd().isBefore(LocalDateTime.now())) {
-            throw new BadRequestException("Дата окончания бронирования не должна быть " +
-                    "в прошлом.");
-        }
-        if (bookingNewDto.getStart().isAfter(bookingNewDto.getEnd())) {
-            throw new BadRequestException("Дата начала бронирования не должна быть " +
-                    "позже даты окончания бронирования.");
         }
     }
 }
