@@ -57,27 +57,29 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.name").value("user"));
     }
 
-    @Test
-    void createUser_EmptyName_ReturnBadRequest() throws Exception {
-        user.setName("");
+    // TODO: 12.06.2023 DELETE
+//    @Test
+//    void createUser_EmptyName_ReturnBadRequest() throws Exception {
+//        user.setName("");
+//
+//        mockMvc.perform(post("/users")
+//                .content(objectMapper.writeValueAsString(user))
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .accept(MediaType.APPLICATION_JSON)
+//        ).andExpect(status().isBadRequest());
+//    }
 
-        mockMvc.perform(post("/users")
-                .content(objectMapper.writeValueAsString(user))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void createUser_WrongEmail_ReturnBadRequest() throws Exception {
-        user.setEmail("example.com");
-
-        mockMvc.perform(post("/users")
-                .content(objectMapper.writeValueAsString(user))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isBadRequest());
-    }
+    // TODO: 12.06.2023 DELETE
+//    @Test
+//    void createUser_WrongEmail_ReturnBadRequest() throws Exception {
+//        user.setEmail("example.com");
+//
+//        mockMvc.perform(post("/users")
+//                .content(objectMapper.writeValueAsString(user))
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .accept(MediaType.APPLICATION_JSON)
+//        ).andExpect(status().isBadRequest());
+//    }
 
     @Test
     void updateUser_Normal() throws Exception {

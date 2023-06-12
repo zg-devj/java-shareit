@@ -20,7 +20,7 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto create(
-            @Valid @RequestBody UserDto userDto
+            @RequestBody UserDto userDto
     ) {
         log.info("POST /users - создание пользователя.");
         return userService.saveUser(userDto);
