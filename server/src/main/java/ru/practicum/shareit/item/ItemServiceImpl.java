@@ -137,10 +137,8 @@ public class ItemServiceImpl implements ItemService {
         List<Item> items = itemRepository.findAllByOwnerIdOrderByIdAsc(userId, pageRequest);
         List<Comment> comments = commentRepository.findCommentsByItemIsIn(items);
         for (Item item : items) {
-            // TODO: 09.06.2023 DELETE
-            //List<Comment> comments1 = commentRepository.findCommentsByItemIdOrderByCreatedAsc(item.getId());
             List<Comment> comments1 = comments.stream()
-                    .filter(c-> Objects.equals(c.getItem().getId(), item.getId()))
+                    .filter(c -> Objects.equals(c.getItem().getId(), item.getId()))
                     .sorted(Comparator.comparing(Comment::getCreated))
                     .collect(Collectors.toList());
             BookingShort last = getLastBooking(item.getId(), userId);

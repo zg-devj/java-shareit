@@ -33,8 +33,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDto createBooking(Long userId, BookingNewDto bookingNewDto) {
-        // TODO: 12.06.2023 DELETE
-//        validDateForBookingNewDto(bookingNewDto);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(
