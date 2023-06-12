@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentNewRequestDto;
 import ru.practicum.shareit.item.dto.ItemRequestDto;
 
 import javax.validation.Valid;
@@ -19,6 +20,17 @@ import static ru.practicum.shareit.utils.Utils.userIsNull;
 @Validated
 public class ItemController {
     private final ItemClient itemClient;
+
+    @PostMapping(value = "/{itemId}/comment")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Object> createComment(
+            @RequestHeader(value = "X-Sharer-User-Id") long userId,
+            @PathVariable long itemId,
+            @Valid @RequestBody CommentNewRequestDto commentNewDto
+    ) {
+        userIsNull(userId);
+        return itemClient.addComment(userId, itemId, commentNewDto);
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

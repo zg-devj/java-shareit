@@ -96,47 +96,47 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.name").value("name"));
     }
 
-    @Test
-    void createItem_EmptyName_ReturnBadRequest() throws Exception {
-        ItemDto wrong = addedItem.toBuilder().name(null).build();
-        when(itemService.saveItem(anyLong(), any(ItemDto.class)))
-                .thenReturn(ItemMapper.itemToDto(item));
+//    @Test
+//    void createItem_EmptyName_ReturnBadRequest() throws Exception {
+//        ItemDto wrong = addedItem.toBuilder().name(null).build();
+//        when(itemService.saveItem(anyLong(), any(ItemDto.class)))
+//                .thenReturn(ItemMapper.itemToDto(item));
+//
+//        mockMvc.perform(post("/items")
+//                .header("X-Sharer-User-Id", 1L)
+//                .content(objectMapper.writeValueAsString(wrong))
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .accept(MediaType.APPLICATION_JSON)
+//        ).andExpect(status().isBadRequest());
+//    }
 
-        mockMvc.perform(post("/items")
-                .header("X-Sharer-User-Id", 1L)
-                .content(objectMapper.writeValueAsString(wrong))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isBadRequest());
-    }
+//    @Test
+//    void createItem_EmptyDescription_ReturnBadRequest() throws Exception {
+//        ItemDto wrong = addedItem.toBuilder().description(null).build();
+//        when(itemService.saveItem(anyLong(), any(ItemDto.class)))
+//                .thenReturn(ItemMapper.itemToDto(item));
+//
+//        mockMvc.perform(post("/items")
+//                .header("X-Sharer-User-Id", 1L)
+//                .content(objectMapper.writeValueAsString(wrong))
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .accept(MediaType.APPLICATION_JSON)
+//        ).andExpect(status().isBadRequest());
+//    }
 
-    @Test
-    void createItem_EmptyDescription_ReturnBadRequest() throws Exception {
-        ItemDto wrong = addedItem.toBuilder().description(null).build();
-        when(itemService.saveItem(anyLong(), any(ItemDto.class)))
-                .thenReturn(ItemMapper.itemToDto(item));
-
-        mockMvc.perform(post("/items")
-                .header("X-Sharer-User-Id", 1L)
-                .content(objectMapper.writeValueAsString(wrong))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void createItem_EmptyAvailable_ReturnBadRequest() throws Exception {
-        ItemDto wrong = addedItem.toBuilder().available(null).build();
-        when(itemService.saveItem(anyLong(), any(ItemDto.class)))
-                .thenReturn(ItemMapper.itemToDto(item));
-
-        mockMvc.perform(post("/items")
-                .header("X-Sharer-User-Id", 1L)
-                .content(objectMapper.writeValueAsString(wrong))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isBadRequest());
-    }
+//    @Test
+//    void createItem_EmptyAvailable_ReturnBadRequest() throws Exception {
+//        ItemDto wrong = addedItem.toBuilder().available(null).build();
+//        when(itemService.saveItem(anyLong(), any(ItemDto.class)))
+//                .thenReturn(ItemMapper.itemToDto(item));
+//
+//        mockMvc.perform(post("/items")
+//                .header("X-Sharer-User-Id", 1L)
+//                .content(objectMapper.writeValueAsString(wrong))
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .accept(MediaType.APPLICATION_JSON)
+//        ).andExpect(status().isBadRequest());
+//    }
 
     @Test
     void updateItem_Normal() throws Exception {
