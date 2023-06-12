@@ -8,12 +8,9 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentNewDto;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.utils.Utils;
 
 import javax.validation.Valid;
 import java.util.List;
-
-import static ru.practicum.shareit.utils.Utils.userIsNull;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -36,9 +33,8 @@ public class ItemController {
     @ResponseStatus(HttpStatus.CREATED)
     public ItemDto create(
             @RequestHeader(value = "X-Sharer-User-Id") Long userId,
-            @Valid @RequestBody ItemDto itemDto
+            @RequestBody ItemDto itemDto
     ) {
-        userIsNull(userId);
         log.info("POST /items - добавление вещи пользователем {}", userId);
         return itemService.saveItem(userId, itemDto);
     }
@@ -49,7 +45,6 @@ public class ItemController {
             @RequestBody ItemDto itemDto,
             @PathVariable Long id
     ) {
-        userIsNull(userId);
         log.info("PATCH /items/{} - обновить вещь", id);
         itemDto.setId(id);
         return itemService.updateItem(userId, itemDto);
@@ -60,7 +55,6 @@ public class ItemController {
             @RequestHeader(value = "X-Sharer-User-Id") Long userId,
             @PathVariable Long id
     ) {
-        userIsNull(userId);
         log.info("GET /items/{} - просмотр вещи", id);
         return itemService.findById(id, userId);
     }
@@ -71,8 +65,6 @@ public class ItemController {
             @RequestParam(defaultValue = "0") int from,
             @RequestParam(defaultValue = "20") int size
     ) {
-        userIsNull(userId);
-        Utils.checkPaging(from, size);
         log.info("GET /items - просмотр вещей пользователем с id={}", userId);
         return itemService.findAllByUserId(userId, from, size);
     }
@@ -84,7 +76,7 @@ public class ItemController {
             @RequestParam(defaultValue = "0") int from,
             @RequestParam(defaultValue = "20") int size
     ) {
-        Utils.checkPaging(from, size);
+        log.info("GET /items/search, text={}", text);
         return itemService.search(text, from, size);
     }
 }
