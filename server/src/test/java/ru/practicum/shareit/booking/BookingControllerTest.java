@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingNewDto;
-import ru.practicum.shareit.exceptions.ErrorMessage;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.utils.Utils;

@@ -11,7 +11,6 @@ import ru.practicum.shareit.exceptions.BadRequestException;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static ru.practicum.shareit.utils.Utils.checkPaging;
 

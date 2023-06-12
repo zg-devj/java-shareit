@@ -9,7 +9,6 @@ import ru.practicum.shareit.item.dto.CommentNewDto;
 import ru.practicum.shareit.item.dto.ItemBookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j

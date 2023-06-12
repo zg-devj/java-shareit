@@ -1,0 +1,61 @@
+package ru.practicum.shareit.request;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.request.dto.ItemRequestNewDto;
+
+import javax.validation.Valid;
+
+import static ru.practicum.shareit.utils.Utils.checkPaging;
+import static ru.practicum.shareit.utils.Utils.userIsNull;
+
+@Controller
+@RequestMapping("/requests")
+@RequiredArgsConstructor
+@Validated
+public class ItemRequestController {
+
+    private final ItemRequestClient requestClient;
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Object> create(
+            @RequestHeader("X-Sharer-User-Id") long userId,
+            @Valid @RequestBody ItemRequestNewDto requestDto
+    ) {
+        userIsNull(userId);
+        return requestClient.saveItemRequest(userId, requestDto);
+    }
+
+    @GetMapping
+    public ResponseEntity<Object> findAllByRequestor(
+            @RequestHeader("X-Sharer-User-Id") long userId
+    ) {
+        userIsNull(userId);
+        return requestClient.findAllByRequestor(userId);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<Object> findAll(
+            @RequestHeader("X-Sharer-User-Id") long userId,
+            @RequestParam(defaultValue = "0") int from,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        userIsNull(userId);
+        checkPaging(from, size);
+        return requestClient.findItemRequests(userId, from, size);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getItemRequest(
+            @RequestHeader("X-Sharer-User-Id") long userId,
+            @PathVariable long id
+    ) {
+        userIsNull(userId);
+        return requestClient.getItemRequest(userId, id);
+    }
+}
