@@ -10,7 +10,6 @@ import ru.practicum.shareit.booking.dto.BookingNewRequestDto;
 import ru.practicum.shareit.exceptions.BadRequestException;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
 
 import static ru.practicum.shareit.utils.Utils.checkPaging;
 
@@ -73,24 +72,12 @@ public class BookingController {
 
     // Проверка бронирования
     private void validDateForBookingNewDto(BookingNewRequestDto bookingNewDto) {
-        if (bookingNewDto.getStart() == null) {
-            throw new BadRequestException("Дата начала бронирования должны быть указано.");
-        }
-        if (bookingNewDto.getEnd() == null) {
-            throw new BadRequestException("Дата окончания бронирования должны быть указано.");
-        }
+
         if (bookingNewDto.getStart().isEqual(bookingNewDto.getEnd())) {
             throw new BadRequestException("Дата начала бронирования не должна совпадать " +
                     "с датой окончания бронирования.");
         }
-        if (bookingNewDto.getStart().isBefore(LocalDateTime.now())) {
-            throw new BadRequestException("Дата начала бронирования не должна быть " +
-                    "в прошлом.");
-        }
-        if (bookingNewDto.getEnd().isBefore(LocalDateTime.now())) {
-            throw new BadRequestException("Дата окончания бронирования не должна быть " +
-                    "в прошлом.");
-        }
+
         if (bookingNewDto.getStart().isAfter(bookingNewDto.getEnd())) {
             throw new BadRequestException("Дата начала бронирования не должна быть " +
                     "позже даты окончания бронирования.");
