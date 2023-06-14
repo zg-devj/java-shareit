@@ -57,7 +57,6 @@ public class BookingController {
             @RequestParam(defaultValue = "20") int size
     ) {
         checkPaging(from, size);
-
         return bookingClient.getAllBookings(userId, state, from, size);
     }
 
@@ -69,7 +68,6 @@ public class BookingController {
             @RequestParam(defaultValue = "20") int size
     ) {
         checkPaging(from, size);
-
         return bookingClient.getAllBookingsForOwner(userId, state, from, size);
     }
 

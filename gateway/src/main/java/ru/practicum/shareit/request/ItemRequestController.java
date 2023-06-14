@@ -11,7 +11,6 @@ import ru.practicum.shareit.request.dto.ItemRequestNewDto;
 import javax.validation.Valid;
 
 import static ru.practicum.shareit.utils.Utils.checkPaging;
-import static ru.practicum.shareit.utils.Utils.userIsNull;
 
 @Controller
 @RequestMapping("/requests")
@@ -27,7 +26,6 @@ public class ItemRequestController {
             @RequestHeader("X-Sharer-User-Id") long userId,
             @Valid @RequestBody ItemRequestNewDto requestDto
     ) {
-        userIsNull(userId);
         return requestClient.saveItemRequest(userId, requestDto);
     }
 
@@ -35,7 +33,6 @@ public class ItemRequestController {
     public ResponseEntity<Object> findAllByRequestor(
             @RequestHeader("X-Sharer-User-Id") long userId
     ) {
-        userIsNull(userId);
         return requestClient.findAllByRequestor(userId);
     }
 
@@ -45,7 +42,6 @@ public class ItemRequestController {
             @RequestParam(defaultValue = "0") int from,
             @RequestParam(defaultValue = "20") int size
     ) {
-        userIsNull(userId);
         checkPaging(from, size);
         return requestClient.findItemRequests(userId, from, size);
     }
@@ -55,7 +51,6 @@ public class ItemRequestController {
             @RequestHeader("X-Sharer-User-Id") long userId,
             @PathVariable long id
     ) {
-        userIsNull(userId);
         return requestClient.getItemRequest(userId, id);
     }
 }
